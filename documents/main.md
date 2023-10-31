@@ -18,8 +18,8 @@ Usage: pk;import <path to system.json>
 ## Member Commands
 These groups of commands enable the creation of new headmates and the editing of headmates.
 ```
-Usage: pk;m new <id>
-       pk;m <id> rename <newid>
+Usage: pk;[member|m] new <id>
+       pk;m <id> [rename|rn] <newid>
        pk;m <id> delete
        pk;m <id> [displayname|dn]
        pk;m <id> [displayname|dn] <display name>
@@ -34,7 +34,7 @@ Usage: pk;m new <id>
 ## Switch Command
 This command switches the currently active headmate.
 ```
-Usage: pk;sw <id>
+Usage: pk;[switch|sw] <id>
        /wiziplicity switch <id>
 ```
 ## Config Commands
