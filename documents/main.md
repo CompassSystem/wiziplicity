@@ -40,7 +40,8 @@ Usage: pk;sw <id>
 ## Config Commands
 These commands can change config values, notably: `nickname_format`, `skin_change_delay` and the per server settings.
 ```
-Usage: /wiziplicity config global nickname_format <nickname format>
+Usage: /wiziplicity config global nickname_format with_pronouns <nickname format>
+       /wiziplicity config global nickname_format no_pronouns <nickname format>
        /wiziplicity config global skin_change_delay <delay>
        /wiziplicity config server skin_change_delay <delay>
        /wiziplicity config server alias <existing server>
@@ -66,7 +67,7 @@ If the `color` value is not provided then it will default the color `white`.
   // Values above provided as reference
   "nickname_format": {
     "no_pronouns": "<c:{colour}>{name}</c> <gold>🧭</gold>",
-    "pronouns": "<c:{colour}>{name}</c> <gray>({pronouns})</gray> <gold>🧭</gold>"
+    "with_pronouns": "<c:{colour}>{name}</c> <gray>({pronouns})</gray> <gold>🧭</gold>"
   }
 }
 ```
