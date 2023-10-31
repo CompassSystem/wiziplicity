@@ -1,0 +1,5 @@
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version = "1.20.1" }
+fabric_loader = { module = "net.fabricmc:fabric-loader", version = "0.14.24" }
+fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version = "0.90.4+1.20.1" }
+fabric_kotlin = { module = "net.fabricmc:fabric-language-kotlin", version = "1.10.11+kotlin.1.9.20" }

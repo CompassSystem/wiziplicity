@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "wiziplicity",
+  "version": "${version}",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      {
+      "adapter": "kotlin",
+      "value": "compass_system.wiziplicity.Main"
+      }
+    ]
+  },
+  "suggests": {
+    "styled-nicknames": "*",
+    "fabrictailor": "*"
+  },
+
+  "name": "Wiziplicity",
+  "description": "A clientside helper for plural folk to change nicknames(Styled Nicknames) and skins(Fabric Tailor).",
+  "authors": ["Compasses"],
+  "license": ["MIT", "All Rights Reserved"]
+}
