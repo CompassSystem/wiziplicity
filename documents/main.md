@@ -30,12 +30,14 @@ Usage: pk;[member|m] new <id>
        pk;m <id> [proxy|proxytags]
        pk;m <id> [proxy|proxytags] <proxytag>
        pk;m <id> [proxy|proxytags] [add|remove] <proxytag>
+       pk;m <id> skin
+       pk;m <id> skin <url>
 ```
 ## Switch Command
 This command switches the currently active headmate.
 ```
-Usage: pk;[switch|sw] <id>
-       /wiziplicity switch <id>
+Usage: pk;[switch|sw] [out|<id>]
+       /wiziplicity switch [out|<id>]
 ```
 ## Config Commands
 These commands can change config values, notably: `nickname_format`, `skin_change_delay` and the per server settings.
@@ -81,7 +83,7 @@ The delay on the skin change in seconds.
 ```
 
 ## Headmates
-Each entry will store a few details including: `id` (object key), and optionally: `name`, `nickname`, `pronouns`, `proxytags`, and `color`
+Each entry will store a few details including: `id` (object key), and optionally: `name`, `nickname`, `pronouns`, `proxytags`, `skin`, and `color`
 ```json5
 {
   "headmates": {
@@ -89,6 +91,7 @@ Each entry will store a few details including: `id` (object key), and optionally
       "name": "Needle",
       "pronouns": "it/its",
       "color": "#49D2C4",
+      "skin": "https://example.com",
       "proxytags": ["text-needle"]
     }
   }
@@ -102,7 +105,7 @@ Can reference another entry instead of new values for aliases to the same server
 {
   "server_settings": {
     "127.0.0.1": {
-      "nickname_delay": 2
+      "skin_change_delay": 20
     },
     "example.com": "127.0.0.1"
   }
