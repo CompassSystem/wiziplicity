@@ -1,0 +1,1 @@
+The project logo is `All Rights Reserved` otherwise all other files are `MIT` licensed.
