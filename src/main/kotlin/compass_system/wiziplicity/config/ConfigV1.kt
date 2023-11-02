@@ -86,7 +86,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
         val serverSettings = combinedSettings.filterValues { it is JsonObject }.mapValues { Json.decodeFromJsonElement(ServerSettings.serializer(), it.value as JsonObject) }
         val aliasedServers = combinedSettings.filterValues { it is JsonPrimitive }.mapValues { (it.value as JsonPrimitive).content }
 
-        ConfigV1(nicknames["no_pronouns"]!!, nicknames["with_pronouns"], skinChangeDelay, headmates, serverSettings, aliasedServers)
+        ConfigV1(nicknames["no_pronouns"], nicknames["with_pronouns"], skinChangeDelay, headmates, serverSettings, aliasedServers)
     }
 
 }
