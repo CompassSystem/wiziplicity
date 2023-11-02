@@ -14,7 +14,7 @@ import java.nio.file.Files
 import kotlin.io.path.exists
 
 object ConfigHolder {
-    private val configPath = FabricLoader.getInstance().configDir.resolve("wiziplicity.json")
+    private val configPath = FabricLoader.getInstance().configDir.resolve("${Main.MOD_ID}.json")
     internal var config: ConfigV1? = null
     internal var changed: Boolean = false
 
@@ -62,11 +62,11 @@ object ConfigHolder {
 
     private fun backupNewerOrInvalidConfig(contents: String? = null) {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val newFilePath = FabricLoader.getInstance().configDir.resolve("wiziplicity-${now.date}-${now.time.hour}-${now.time.minute}-${now.time.second}.bak.json")
+        val newFilePath = FabricLoader.getInstance().configDir.resolve("${Main.MOD_ID}-${now.date}-${now.time.hour}-${now.time.minute}-${now.time.second}.bak.json")
 
         try {
             Files.move(configPath, newFilePath)
-            Main.logger.info("""Renaming invalid "wiziplicity.json" to "${newFilePath.fileName}".""")
+            Main.logger.info("""Renaming invalid "${Main.MOD_ID}.json" to "${newFilePath.fileName}".""")
         } catch (_: Exception) {
             if (contents != null) {
                 Main.logger.error("Failed to backup invalid config, it may be replaced, original file contents: ")
