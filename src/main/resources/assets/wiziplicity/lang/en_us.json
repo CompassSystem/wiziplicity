@@ -1,0 +1,16 @@
+{
+  "wiziplicity.mod_name": "Wiziplicity",
+
+  "commands.wiziplicity.mn": "Gotta catch 'em all!",
+  "commands.wiziplicity.fire": "A giant lightning bolt promptly erupts into a pillar of fire as it hits your opponent.",
+  "commands.wiziplicity.thunder": "A giant ball of lightning is conjured and fired directly at your opponent, vanquishing them.",
+  "commands.wiziplicity.freeze": "A giant crystal ball of ice is charged and hurled toward your opponent, bursting open and freezing them solid on contact.",
+  "commands.wiziplicity.starstorm": "Vibrant colours burst forth from the sky as meteors rain down upon your opponent.",
+  "commands.wiziplicity.flash": "A ball of green light appears above your head and flies towards your enemy, exploding on contact.",
+  "commands.wiziplicity.rool": "\"What the fuck is a Pokémon?\"",
+  "commands.wiziplicity.switch.out.success": "Switch out registered.",
+  "commands.wiziplicity.switch.out.failed": "No one to switch out.",
+
+  "argument.wiziplicity.headmate.invalid": "Unknown headmate: '%s'",
+  "argument.wiziplicity.server.invalid": "Unknown server: '%s'"
+}

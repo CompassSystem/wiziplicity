@@ -23,14 +23,14 @@ Usage: pk;[member|m] new <id>
        pk;m <id> [rename|rn] <newid>
        pk;m <id> delete
        pk;m <id> [displayname|dn]
-       pk;m <id> [displayname|dn] <display name>
+       pk;m <id> [displayname|dn] <name>
        pk;m <id> [color|colour]
        pk;m <id> [color|colour] <color>
        pk;m <id> pronouns
        pk;m <id> pronouns <pronouns>
        pk;m <id> [proxy|proxytags]
-       pk;m <id> [proxy|proxytags] <proxytag>
-       pk;m <id> [proxy|proxytags] [add|remove] <proxytag>
+       pk;m <id> [proxy|proxytags] <proxy>
+       pk;m <id> [proxy|proxytags] [add|remove] <proxy>
        pk;m <id> skin
        pk;m <id> skin <url>
        /wiziplicity member ... (refer to above, shorthands not avaliable for slash commands)

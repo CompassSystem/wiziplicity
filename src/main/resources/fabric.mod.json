@@ -11,6 +11,12 @@
       }
     ]
   },
+  "mixins": [
+    {
+      "config": "wiziplicity.mixins.json",
+      "environment": "client"
+    }
+  ],
   "suggests": {
     "styled-nicknames": "*",
     "fabrictailor": "*"

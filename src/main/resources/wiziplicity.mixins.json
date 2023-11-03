@@ -1,0 +1,6 @@
+{
+  "package": "compass_system.wiziplicity.mixin",
+  "client": ["PlayerChatCanceller"],
+  "minVersion": "0.8",
+  "required": true
+}

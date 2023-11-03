@@ -2,48 +2,56 @@ package compass_system.wiziplicity.command
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.arguments.ArgumentType
-import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.builder.ArgumentBuilder
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import com.mojang.brigadier.builder.RequiredArgumentBuilder
-import com.mojang.brigadier.context.CommandContext
-import com.mojang.brigadier.tree.CommandNode
-import com.mojang.brigadier.tree.LiteralCommandNode
 import compass_system.wiziplicity.Main
 import compass_system.wiziplicity.command.arguments.ColorArgumentType
 import compass_system.wiziplicity.command.arguments.HeadmateArgumentType
-import compass_system.wiziplicity.command.arguments.ServerArgumentType
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.ChatFormatting
+import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.Component
 
-object Commands {
-    fun register() {
-        ClientCommandRegistrationCallback.EVENT.register { dispatcher, context ->
-            dispatcher.register(Main.MOD_ID) {
-                declareImportCommand()
-                declareMemberCommand()
-                declareSwitchCommand()
-                declareConfigCommand()
+object ChatCommands {
+    private var lastUsedCommandPrefix = ""
+    private val chatCommandDispatcher = CommandDispatcher<FabricClientCommandSource>().apply {
+        funCommand("mn")
+        funCommand("fire", italics = true)
+        funCommand("thunder", italics = true)
+        funCommand("freeze", italics = true)
+        funCommand("starstorm", italics = true)
+        funCommand("flash", italics = true)
+        funCommand("rool", italics = true)
+
+        declareImportCommand()
+        declareMemberCommand()
+        declareSwitchCommand()
+    }
+
+    private fun CommandDispatcher<FabricClientCommandSource>.funCommand(name: String, italics: Boolean = false) {
+        register(name) {
+            runs {
+                source.sendFeedback(Component.translatable("commands.wiziplicity.$name").apply {
+                    if (italics) {
+                        withStyle(ChatFormatting.ITALIC)
+                    }
+                }.withWiziplicityPrefix())
+                Command.SINGLE_SUCCESS
             }
         }
     }
 
-    private fun LiteralArgumentBuilder<FabricClientCommandSource>.declareImportCommand() {
-        literal("import") {
+    private fun CommandDispatcher<FabricClientCommandSource>.declareImportCommand() {
+        register("import") {
             requiredArgument("file", StringArgumentType.greedyString()) {
                 runs {
-                    val file = StringArgumentType.getString(this, "file")
-
                     Command.SINGLE_SUCCESS
                 }
             }
         }
     }
 
-    private fun LiteralArgumentBuilder<FabricClientCommandSource>.declareMemberCommand() {
-        literal("member") {
+    private fun CommandDispatcher<FabricClientCommandSource>.declareMemberCommand() {
+        val memberCommand = register("member") {
             literal("new") {
                 requiredArgument("id", StringArgumentType.string()) {
                     runs {
@@ -61,7 +69,7 @@ object Commands {
             }
 
             requiredArgument("id", HeadmateArgumentType.headmate()) {
-                literal("rename") {
+                val renameCommand = literal("rename") {
                     requiredArgument("newid", StringArgumentType.string()) {
                         runs {
                             val headmate = HeadmateArgumentType.getHeadmate(this, "id")
@@ -72,6 +80,8 @@ object Commands {
                     }
                 }
 
+                literal("rn") { redirect(renameCommand) }
+
                 literal("delete") {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
@@ -80,7 +90,7 @@ object Commands {
                     }
                 }
 
-                literal("displayname") {
+                val displayNameCommand = literal("displayname") {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
 
@@ -96,6 +106,8 @@ object Commands {
                         }
                     }
                 }
+
+                literal("dn") { redirect(displayNameCommand) }
 
                 val colorCommand = literal("color") {
                     runs {
@@ -192,10 +204,12 @@ object Commands {
                 }
             }
         }
+
+        register("m") { redirect(memberCommand) }
     }
 
-    private fun LiteralArgumentBuilder<FabricClientCommandSource>.declareSwitchCommand() {
-        literal("switch") {
+    private fun CommandDispatcher<FabricClientCommandSource>.declareSwitchCommand() {
+        val switchCommand = register("switch") {
             literal("out") {
                 runs {
                     Command.SINGLE_SUCCESS
@@ -206,108 +220,38 @@ object Commands {
                 runs {
                     val headmate = HeadmateArgumentType.getHeadmate(this, "headmate")
 
+                    println(headmate)
+
                     Command.SINGLE_SUCCESS
                 }
             }
         }
+
+        register("sw") { redirect(switchCommand) }
     }
 
-    private fun LiteralArgumentBuilder<FabricClientCommandSource>.declareConfigCommand() {
-        literal("config") {
-            literal("global") {
-                literal("nickname_format") {
-                    literal("with_pronouns") {
-                        requiredArgument("format", StringArgumentType.greedyString()) {
-                            runs {
-                                val format = StringArgumentType.getString(this, "format")
+    private val PREFIX = Component.literal("").append(Component.translatable("wiziplicity.mod_name").withStyle(ChatFormatting.DARK_AQUA)).append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY))
 
-                                Command.SINGLE_SUCCESS
-                            }
-                        }
-                    }
+    private fun Component.withWiziplicityPrefix(): Component = PREFIX.copy().append(this)
 
-                    literal("no_pronouns") {
-                        requiredArgument("format", StringArgumentType.greedyString()) {
-                            runs {
-                                val format = StringArgumentType.getString(this, "format")
+    @JvmStatic
+    fun parseChatCommand(message: String): Boolean {
+        if (message.startsWith("pk;") || message.startsWith("pk!")) {
+            val prefix = message.take(3)
+            val command = message.takeLast(message.length - 3)
 
-                                Command.SINGLE_SUCCESS
-                            }
-                        }
-                    }
-                }
+            lastUsedCommandPrefix = prefix // todo: would like to make this part of the command source.
+            val commandSource = Minecraft.getInstance().connection!!.suggestionsProvider as FabricClientCommandSource
 
-                literal("skin_change_delay") {
-                    requiredArgument("delay", IntegerArgumentType.integer(0)) {
-                        runs {
-                            val delay = IntegerArgumentType.getInteger(this, "delay")
-
-                            Command.SINGLE_SUCCESS
-                        }
-                    }
-                }
+            try {
+                chatCommandDispatcher.execute(command, commandSource)
+            } catch (error: Exception) {
+                Main.logger.error("Error executing command: ", error)
             }
 
-            literal("server") {
-                literal("skin_change_delay") {
-                    requiredArgument("delay", IntegerArgumentType.integer(0)) {
-                        runs {
-                            val delay = IntegerArgumentType.getInteger(this, "delay")
-
-                            Command.SINGLE_SUCCESS
-                        }
-                    }
-                }
-
-                literal("alias") {
-                    requiredArgument("server", ServerArgumentType.server()) {
-                        runs {
-                            val server = ServerArgumentType.getServer(this, "server")
-
-                            Command.SINGLE_SUCCESS
-                        }
-                    }
-                }
-            }
+            return true
         }
-    }
-}
 
-internal fun <Source> ArgumentBuilder<Source, *>.literal(
-        name: String,
-        action: LiteralArgumentBuilder<Source>.() -> Unit
-): CommandNode<Source> {
-    val node = LiteralArgumentBuilder.literal<Source>(name).apply(action).build()
-
-    then(node)
-
-    return node
-}
-
-internal fun <Source> CommandDispatcher<Source>.register(
-        name: String,
-        action: LiteralArgumentBuilder<Source>.() -> Unit
-): LiteralCommandNode<Source> {
-    val argument = LiteralArgumentBuilder.literal<Source>(name)
-    action.invoke(argument)
-    return register(argument)
-}
-
-internal fun <Source, Type2> ArgumentBuilder<Source, *>.requiredArgument(
-        name: String,
-        type: ArgumentType<Type2>,
-        action: ArgumentBuilder<Source, *>.() -> Unit
-) {
-    val argument = RequiredArgumentBuilder.argument<Source, Type2>(name, type)
-    action.invoke(argument)
-    then(argument)
-}
-
-
-internal fun <Source, Builder : ArgumentBuilder<Source, Builder>> ArgumentBuilder<Source, Builder>.runs(
-        action: CommandContext<Source>.() -> Int
-) {
-    executes {
-        action.invoke(it)
+        return false
     }
 }
