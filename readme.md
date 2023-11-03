@@ -30,6 +30,8 @@ To finish setup you'll likely want to set a nickname format for members with and
 /wiziplicity config global nickname_format with_pronouns <c:{colour}>{name}</c> <gray>({pronouns})</gray> <gold>🧭</gold>
 /wiziplicity config global nickname_format no_pronouns <c:{colour}>{name}</c> <gold>🧭</gold>
 ```
+> Note: nickname formats can take advantage of any [Styled Chat](https://placeholders.pb4.eu/user/text-format/) formatting, some may be restricted depending on the server.
+
 > Note the following tags are support:
 >
 > `{name}` The display name for the member defaulting on the member id
