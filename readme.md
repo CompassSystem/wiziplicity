@@ -22,7 +22,8 @@ pk;m needle color #49D2C4
 ```
 > Note: colors can be any valid 6 digit hex, #ffffff, or any of the builtin minecraft colors:
 > 
-> black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white
+> `black`, `dark_blue`, `dark_green`, `dark_aqua`, `dark_red`, `dark_purple`, `gold`, `gray`, `dark_gray`, `blue`, `green`, `aqua`, `red`, `light_purple`, `yellow`, `white`
+
 ### Finalizing Setup
 To finish setup you'll likely want to set a nickname format for members with and without pronouns like so:
 ```
@@ -32,16 +33,15 @@ To finish setup you'll likely want to set a nickname format for members with and
 > Note the following tags are support:
 >
 > `{name}` The display name for the member defaulting on the member id
-> 
-> `{id}` The member id
-> 
-> `{pronouns}`
+>
+> `{id}`, `{pronouns}`
 > 
 > `{color}` or `{colour}` The color for the member defaulting on white
 
 Finally, you need to switch in using `pk;[sw|switch] <id>` or `/wiziplicity switch <id>`.
 
 For more information please read the [reference document](https://github.com/CompassSystem/wiziplicity/blob/main/documents/main.md).
+
 ## Why Wiziplicity?
 
 We were in a VC whilst trying to come up with names for this mod. We thought up the name "System Helper" however we thought this would be confusing for singlets.
