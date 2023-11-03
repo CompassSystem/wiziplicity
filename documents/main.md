@@ -19,6 +19,7 @@ Usage: pk;import <path to system.json>
 These groups of commands enable the creation of new headmates and the editing of headmates.
 ```
 Usage: pk;[member|m] new <id>
+       pk;m list
        pk;m <id> [rename|rn] <newid>
        pk;m <id> delete
        pk;m <id> [displayname|dn]
@@ -32,6 +33,7 @@ Usage: pk;[member|m] new <id>
        pk;m <id> [proxy|proxytags] [add|remove] <proxytag>
        pk;m <id> skin
        pk;m <id> skin <url>
+       /wiziplicity member ... (refer to above, shorthands not avaliable for slash commands)
 ```
 ## Switch Command
 This command switches the currently active headmate.
