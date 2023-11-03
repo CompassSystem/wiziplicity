@@ -91,12 +91,59 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
 
 }
 
+@Serializable(with = ProxySerializer::class)
+data class Proxy(
+        val prefix: String? = null,
+        val suffix: String? = null
+)
+
+class ProxySerializer : KSerializer<Proxy> {
+    override val descriptor = PrimitiveSerialDescriptor("compass_system.wiziplicity.config.ProxySerializer", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): Proxy {
+        val value = decoder.decodeString()
+
+        val left = value.substringBefore("text")
+
+        if (left == value) {
+            throw SerializationException("text not found in value")
+        }
+
+        if (left.isEmpty()) {
+            val right = value.substringAfter("text")
+            if (right.isEmpty()) {
+                throw SerializationException("no prefix or suffix found")
+            } else {
+                return Proxy(suffix = right)
+            }
+        } else {
+            val right = value.substringAfter("text")
+            if (right.isNotEmpty()) {
+                throw SerializationException("both prefix and suffix found, cannot deserialize illegal proxy.")
+            } else {
+                return Proxy(prefix = left)
+            }
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: Proxy) {
+        if (value.prefix != null && value.suffix != null) {
+            throw IllegalArgumentException("Both prefix and suffix found, cannot serialize illegal proxy.")
+        }else if (value.prefix != null) {
+            encoder.encodeString("${value.prefix}text")
+        } else if (value.suffix != null) {
+            encoder.encodeString("text${value.suffix}")
+        }
+    }
+
+}
+
 @Serializable
 data class Headmate(
         val name: String? = null,
         val nickname: String? = null,
         val pronouns: String? = null,
-        val proxytags: List<String> = listOf(),
+        val proxytags: List<Proxy> = listOf(),
         val skin: String? = null,
         val color: String? = null
 )
