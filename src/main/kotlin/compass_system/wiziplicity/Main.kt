@@ -14,17 +14,9 @@ object Main : ClientModInitializer {
     override fun onInitializeClient() {
         Commands.register()
 
-        ClientLifecycleEvents.CLIENT_STARTED.register {
-            ConfigHolder.load()
-
-            println(ConfigHolder.config)
-        }
+        ClientLifecycleEvents.CLIENT_STARTED.register { ConfigHolder.load() }
 
         // todo: Should we use a shutdown hook instead?
-        ClientLifecycleEvents.CLIENT_STOPPING.register {
-            ConfigHolder.save()
-
-            println(ConfigHolder.config)
-        }
+        ClientLifecycleEvents.CLIENT_STOPPING.register { ConfigHolder.save() }
     }
 }
