@@ -15,7 +15,7 @@ import kotlin.io.path.exists
 
 object ConfigHolder {
     private val configPath = FabricLoader.getInstance().configDir.resolve("${Main.MOD_ID}.json")
-    internal var config: ConfigV1? = null
+    internal lateinit var config: ConfigV1
     internal var changed: Boolean = false
 
     private val ignoreKeysJson = Json { ignoreUnknownKeys = true }
@@ -80,16 +80,14 @@ object ConfigHolder {
     @OptIn(ExperimentalSerializationApi::class)
     fun save(force: Boolean = false) {
         if (changed) {
-            config?.also { config ->
-                try {
-                    Files.newOutputStream(configPath).use {
-                        prettyJson.encodeToStream(config, it)
-                    }
-                } catch (error: Exception) {
-                    Main.logger.error("Failed to save config: ", error)
-                    Main.logger.error("Config file contents:")
-                    Main.logger.error(prettyJson.encodeToString(config))
+            try {
+                Files.newOutputStream(configPath).use {
+                    prettyJson.encodeToStream(config, it)
                 }
+            } catch (error: Exception) {
+                Main.logger.error("Failed to save config: ", error)
+                Main.logger.error("Config file contents:")
+                Main.logger.error(prettyJson.encodeToString(config))
             }
         }
     }

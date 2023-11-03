@@ -17,9 +17,9 @@ data class ConfigV1(
         val nicknameFormatNoPronouns: String? = null,
         val nicknameFormatWithPronouns: String? = null,
         val skinChangeDelay: Int = 60,
-        val headmates: Map<String, Headmate> = mapOf(),
-        val serverSettings: Map<String, ServerSettings> = mapOf(),
-        val aliasedServerSettings: Map<String, String> = mapOf()
+        val headmates: Map<String, Headmate> = mutableMapOf(),
+        val serverSettings: Map<String, ServerSettings> = mutableMapOf(),
+        val aliasedServerSettings: Map<String, String> = mutableMapOf()
 )
 
 class ConfigV1Serializer : KSerializer<ConfigV1> {
@@ -86,7 +86,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
         val serverSettings = combinedSettings.filterValues { it is JsonObject }.mapValues { Json.decodeFromJsonElement(ServerSettings.serializer(), it.value as JsonObject) }
         val aliasedServers = combinedSettings.filterValues { it is JsonPrimitive }.mapValues { (it.value as JsonPrimitive).content }
 
-        ConfigV1(nicknames["no_pronouns"], nicknames["with_pronouns"], skinChangeDelay, headmates, serverSettings, aliasedServers)
+        ConfigV1(nicknames["no_pronouns"], nicknames["with_pronouns"], skinChangeDelay, headmates.toMutableMap(), serverSettings.toMutableMap(), aliasedServers.toMutableMap())
     }
 
 }
