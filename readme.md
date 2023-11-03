@@ -8,7 +8,7 @@ For information about plurality see: https://morethanone.info/
 ### Importing system data
 If you use PluralKit you can import a system export using `/wiziplicity import <file>` or `pk;import <file>` where file is either the path to the file on disk or the `URL` of the export.
 
-## Creating members
+### Creating members
 If you don't have an existing system already you can easily create a member with the usual PluralKit command `pk;[m|member] new <id>` or using `/wiziplicity member new <id>`
 > Note: ids must consist of only alphanumeric characters, underscores and dashes
 ```
