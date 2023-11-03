@@ -13,13 +13,13 @@ import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.network.chat.Component
 import java.util.concurrent.CompletableFuture
 
-class HeadmateArgumentType : ArgumentType<Headmate> {
+class HeadmateArgumentType : ArgumentType<Pair<String, Headmate>> {
     private val invalidValueError = DynamicCommandExceptionType { Component.translatable("argument.wiziplicity.headmate.invalid", it) }
 
-    override fun parse(reader: StringReader): Headmate {
+    override fun parse(reader: StringReader): Pair<String, Headmate> {
         val id = reader.readString()
 
-        return ConfigHolder.config.headmates[id] ?: throw invalidValueError.create(id)
+        return ConfigHolder.config.headmates[id]?.let { Pair(id, it) } ?: throw invalidValueError.create(id)
     }
 
     override fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
@@ -38,6 +38,6 @@ class HeadmateArgumentType : ArgumentType<Headmate> {
 
     companion object {
         fun headmate() = HeadmateArgumentType()
-        fun getHeadmate(context: CommandContext<FabricClientCommandSource>, name: String): Headmate = context.getArgument(name, Headmate::class.java)
+        fun getHeadmate(context: CommandContext<FabricClientCommandSource>, name: String) = context.getArgument(name, Pair::class.java) as Pair<String, Headmate>
     }
 }

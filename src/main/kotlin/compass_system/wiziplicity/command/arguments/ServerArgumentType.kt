@@ -13,13 +13,13 @@ import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.network.chat.Component
 import java.util.concurrent.CompletableFuture
 
-class ServerArgumentType : ArgumentType<ServerSettings> {
+class ServerArgumentType : ArgumentType<Pair<String, ServerSettings>> {
     private val invalidValueError = DynamicCommandExceptionType { Component.translatable("argument.wiziplicity.server.invalid", it) }
 
-    override fun parse(reader: StringReader): ServerSettings {
+    override fun parse(reader: StringReader): Pair<String, ServerSettings> {
         val id = reader.readString()
 
-        return ConfigHolder.config.serverSettings[id] ?: throw invalidValueError.create(id)
+        return ConfigHolder.config.serverSettings[id]?.let { Pair(id, it) } ?: throw invalidValueError.create(id)
     }
 
     override fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
@@ -38,6 +38,6 @@ class ServerArgumentType : ArgumentType<ServerSettings> {
 
     companion object {
         fun server() = ServerArgumentType()
-        fun getServer(context: CommandContext<FabricClientCommandSource>, name: String): ServerSettings = context.getArgument(name, ServerSettings::class.java)
+        fun getServer(context: CommandContext<FabricClientCommandSource>, name: String) = context.getArgument(name, Pair::class.java) as Pair<String, ServerSettings>
     }
 }
