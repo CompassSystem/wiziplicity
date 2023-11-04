@@ -47,6 +47,7 @@ These commands can change config values, notably: `nickname_format`, `skin_chang
 Usage: /wiziplicity config global nickname_format with_pronouns <nickname format>
        /wiziplicity config global nickname_format no_pronouns <nickname format>
        /wiziplicity config global skin_change_delay <delay>
+       /wiziplicity config global preserve_last_fronter <boolean>
        /wiziplicity config server skin_change_delay <delay>
        /wiziplicity config server alias <existing server>
 ```
@@ -81,6 +82,14 @@ The delay on the skin change in seconds.
 ```json
 {
   "skin_change_delay": 60
+}
+```
+
+## Preserve Last Fronter
+Determines if the last fronter is preserved between servers
+```json
+{
+  "preserve_last_fronter": true
 }
 ```
 

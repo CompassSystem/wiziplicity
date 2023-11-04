@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class PlayerChatCanceller {
     @Inject(method = "sendChat(Ljava/lang/String;)V", at = @At("HEAD"), cancellable = true)
     private void onChatMessage(String message, CallbackInfo info) {
-        if (ChatCommands.parseChatCommand(message) /* || Main.proxyMessage(message) */) {
+        if (ChatCommands.parseChatCommand(message)) {
             info.cancel();
         }
     }

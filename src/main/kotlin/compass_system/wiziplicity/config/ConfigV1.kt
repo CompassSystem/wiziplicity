@@ -17,6 +17,7 @@ data class ConfigV1(
         val nicknameFormatNoPronouns: String? = null,
         val nicknameFormatWithPronouns: String? = null,
         val skinChangeDelay: Int = 60,
+        val preserveLastFronter: Boolean = true,
         val headmates: Map<String, Headmate> = mutableMapOf(),
         val serverSettings: Map<String, ServerSettings> = mutableMapOf(),
         val aliasedServerSettings: Map<String, String> = mutableMapOf()
@@ -28,6 +29,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
         element<Int>("schema_version")
         element("nickname_format", mapSerialDescriptor<String, String>())
         element<Int>("skin_change_delay")
+        element<Boolean>("preserve_last_fronter")
         element("headmates", mapSerialDescriptor<String, Headmate>())
         element("server_settings", mapSerialDescriptor<String, JsonElement>())
     }
@@ -52,14 +54,16 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
             encodeIntElement(descriptor, 0, 1)
             encodeSerializableElement(descriptor, 1, serializer<Map<String, String>>(), nicknames)
             encodeIntElement(descriptor, 2, value.skinChangeDelay)
-            encodeSerializableElement(descriptor, 3, serializer<Map<String, Headmate>>(), value.headmates)
-            encodeSerializableElement(descriptor, 4, serializer<Map<String, JsonElement>>(), combinedSettingsMap)
+            encodeBooleanElement(descriptor, 3, value.preserveLastFronter)
+            encodeSerializableElement(descriptor, 4, serializer<Map<String, Headmate>>(), value.headmates)
+            encodeSerializableElement(descriptor, 5, serializer<Map<String, JsonElement>>(), combinedSettingsMap)
         }
     }
 
     override fun deserialize(decoder: Decoder): ConfigV1 = decoder.decodeStructure(descriptor) {
         var nicknames: Map<String, String> = emptyMap()
         var skinChangeDelay: Int = 60
+        var preserveLastFronter = true
         var headmates: Map<String, Headmate> = emptyMap()
         var combinedSettings: Map<String, JsonElement> = emptyMap()
 
@@ -76,8 +80,9 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
                 }
                 1 -> nicknames = decodeSerializableElement(descriptor, 1, serializer<Map<String, String>>())
                 2 -> skinChangeDelay = decodeIntElement(descriptor, 2)
-                3 -> headmates = decodeSerializableElement(descriptor, 3, serializer<Map<String, Headmate>>())
-                4 -> combinedSettings = decodeSerializableElement(descriptor, 4, serializer<Map<String, JsonElement>>())
+                3 -> preserveLastFronter = decodeBooleanElement(descriptor, 3)
+                4 -> headmates = decodeSerializableElement(descriptor, 4, serializer<Map<String, Headmate>>())
+                5 -> combinedSettings = decodeSerializableElement(descriptor, 5, serializer<Map<String, JsonElement>>())
 
                 else -> throw SerializationException("Unexpected index $index")
             }
@@ -86,7 +91,15 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
         val serverSettings = combinedSettings.filterValues { it is JsonObject }.mapValues { Json.decodeFromJsonElement(ServerSettings.serializer(), it.value as JsonObject) }
         val aliasedServers = combinedSettings.filterValues { it is JsonPrimitive }.mapValues { (it.value as JsonPrimitive).content }
 
-        ConfigV1(nicknames["no_pronouns"], nicknames["with_pronouns"], skinChangeDelay, headmates.toMutableMap(), serverSettings.toMutableMap(), aliasedServers.toMutableMap())
+        ConfigV1(
+                nicknameFormatNoPronouns = nicknames["no_pronouns"],
+                nicknameFormatWithPronouns = nicknames["with_pronouns"],
+                skinChangeDelay = skinChangeDelay,
+                preserveLastFronter = preserveLastFronter,
+                headmates = headmates.toMutableMap(),
+                serverSettings = serverSettings.toMutableMap(),
+                aliasedServerSettings = aliasedServers.toMutableMap()
+        )
     }
 
 }

@@ -79,7 +79,7 @@ object ConfigHolder {
 
     @OptIn(ExperimentalSerializationApi::class)
     fun save(force: Boolean = false) {
-        if (changed) {
+        if (changed || force) {
             try {
                 Files.newOutputStream(configPath).use {
                     prettyJson.encodeToStream(config, it)
