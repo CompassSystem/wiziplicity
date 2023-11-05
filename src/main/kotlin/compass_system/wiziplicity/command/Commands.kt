@@ -1,22 +1,18 @@
 package compass_system.wiziplicity.command
 
 import com.mojang.brigadier.Command
-import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.arguments.ArgumentType
+import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import com.mojang.brigadier.builder.RequiredArgumentBuilder
-import com.mojang.brigadier.context.CommandContext
-import com.mojang.brigadier.tree.CommandNode
-import com.mojang.brigadier.tree.LiteralCommandNode
 import compass_system.wiziplicity.Main
 import compass_system.wiziplicity.command.arguments.ColorArgumentType
 import compass_system.wiziplicity.command.arguments.HeadmateArgumentType
 import compass_system.wiziplicity.command.arguments.ServerArgumentType
+import compass_system.wiziplicity.config.ConfigHolder
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.network.chat.Component
 
 object Commands {
     fun register() {
@@ -221,6 +217,20 @@ object Commands {
                             runs {
                                 val format = StringArgumentType.getString(this, "format")
 
+                                val tokens = ConfigHolder.getTokens(format, allowPronouns = true)
+
+                                if (tokens.invalid.isEmpty() && tokens.valid.isNotEmpty()) {
+                                    ConfigHolder.setNickNameFormatWithPronouns(format)
+
+                                    source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.with_pronouns.success").withWiziplicityPrefix())
+                                } else {
+                                    if (tokens.valid.isEmpty()) {
+                                        source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.with_pronouns.no_valid_tokens").withWiziplicityPrefix())
+                                    } else {
+                                        source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.with_pronouns.invalid_tokens").withWiziplicityPrefix())
+                                    }
+                                }
+
                                 Command.SINGLE_SUCCESS
                             }
                         }
@@ -230,6 +240,16 @@ object Commands {
                         requiredArgument("format", StringArgumentType.greedyString()) {
                             runs {
                                 val format = StringArgumentType.getString(this, "format")
+
+                                val tokens = ConfigHolder.getTokens(format, allowPronouns = false)
+
+                                if (tokens.invalid.isEmpty() && tokens.valid.isNotEmpty()) {
+                                    ConfigHolder.setNickNameFormatNoPronouns(format)
+
+                                    source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.no_pronouns.success").withWiziplicityPrefix())
+                                } else {
+                                    source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.no_pronouns.failure").withWiziplicityPrefix())
+                                }
 
                                 Command.SINGLE_SUCCESS
                             }
@@ -241,6 +261,24 @@ object Commands {
                     requiredArgument("delay", IntegerArgumentType.integer(0)) {
                         runs {
                             val delay = IntegerArgumentType.getInteger(this, "delay")
+
+                            ConfigHolder.skinChangeDelay(delay)
+
+                            source.sendFeedback(Component.translatable("command.wiziplicity.config.global.skin_change_delay", delay).withWiziplicityPrefix())
+
+                            Command.SINGLE_SUCCESS
+                        }
+                    }
+                }
+
+                literal("preserve_last_fronter") {
+                    requiredArgument("boolean", BoolArgumentType.bool()) {
+                        runs {
+                            val preserveLastFronter = BoolArgumentType.getBool(this, "boolean")
+
+                            ConfigHolder.preserveLastFronter(preserveLastFronter)
+
+                            source.sendFeedback(Component.translatable("command.wiziplicity.config.global.preserve_last_fronter", preserveLastFronter).withWiziplicityPrefix())
 
                             Command.SINGLE_SUCCESS
                         }
@@ -254,6 +292,12 @@ object Commands {
                         runs {
                             val delay = IntegerArgumentType.getInteger(this, "delay")
 
+                            val ip = ConfigHolder.configureServer() {
+                                skinChangeDelay = delay
+                            }
+
+                            source.sendFeedback(Component.translatable("command.wiziplicity.config.server.skin_change_delay", ip, delay).withWiziplicityPrefix())
+
                             Command.SINGLE_SUCCESS
                         }
                     }
@@ -264,50 +308,15 @@ object Commands {
                         runs {
                             val server = ServerArgumentType.getServer(this, "server")
 
+                            val ip = ConfigHolder.createAlias(to = server.first)
+
+                            source.sendFeedback(Component.translatable("command.wiziplicity.config.server.alias", server.first, ip).withWiziplicityPrefix())
+
                             Command.SINGLE_SUCCESS
                         }
                     }
                 }
             }
         }
-    }
-}
-
-internal fun <Source> ArgumentBuilder<Source, *>.literal(
-        name: String,
-        action: LiteralArgumentBuilder<Source>.() -> Unit
-): CommandNode<Source> {
-    val node = LiteralArgumentBuilder.literal<Source>(name).apply(action).build()
-
-    then(node)
-
-    return node
-}
-
-internal fun <Source> CommandDispatcher<Source>.register(
-        name: String,
-        action: LiteralArgumentBuilder<Source>.() -> Unit
-): LiteralCommandNode<Source> {
-    val argument = LiteralArgumentBuilder.literal<Source>(name)
-    action.invoke(argument)
-    return register(argument)
-}
-
-internal fun <Source, Type2> ArgumentBuilder<Source, *>.requiredArgument(
-        name: String,
-        type: ArgumentType<Type2>,
-        action: ArgumentBuilder<Source, *>.() -> Unit
-) {
-    val argument = RequiredArgumentBuilder.argument<Source, Type2>(name, type)
-    action.invoke(argument)
-    then(argument)
-}
-
-
-internal fun <Source, Builder : ArgumentBuilder<Source, Builder>> ArgumentBuilder<Source, Builder>.runs(
-        action: CommandContext<Source>.() -> Int
-) {
-    executes {
-        action.invoke(it)
     }
 }

@@ -7,20 +7,19 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable(with = ConfigV1Serializer::class)
 data class ConfigV1(
-        val nicknameFormatNoPronouns: String? = null,
-        val nicknameFormatWithPronouns: String? = null,
-        val skinChangeDelay: Int = 60,
-        val preserveLastFronter: Boolean = true,
-        val headmates: Map<String, Headmate> = mutableMapOf(),
-        val serverSettings: Map<String, ServerSettings> = mutableMapOf(),
-        val aliasedServerSettings: Map<String, String> = mutableMapOf()
+        var nicknameFormatNoPronouns: String? = null,
+        var nicknameFormatWithPronouns: String? = null,
+        var skinChangeDelay: Int = 60,
+        var preserveLastFronter: Boolean = true,
+        val headmates: MutableMap<String, Headmate> = mutableMapOf(),
+        val serverSettings: MutableMap<String, ServerSettings> = mutableMapOf(),
+        val aliasedServerSettings: MutableMap<String, String> = mutableMapOf()
 )
 
 class ConfigV1Serializer : KSerializer<ConfigV1> {
@@ -88,7 +87,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
             }
         }
 
-        val serverSettings = combinedSettings.filterValues { it is JsonObject }.mapValues { Json.decodeFromJsonElement(ServerSettings.serializer(), it.value as JsonObject) }
+        val serverSettings = combinedSettings.filterValues { it is JsonObject }.mapValues { prettyJson.decodeFromJsonElement(ServerSettings.serializer(), it.value as JsonObject) }
         val aliasedServers = combinedSettings.filterValues { it is JsonPrimitive }.mapValues { (it.value as JsonPrimitive).content }
 
         ConfigV1(
@@ -153,16 +152,16 @@ class ProxySerializer : KSerializer<Proxy> {
 
 @Serializable
 data class Headmate(
-        val name: String? = null,
-        val nickname: String? = null,
-        val pronouns: String? = null,
+        var name: String? = null,
+        var nickname: String? = null,
+        var pronouns: String? = null,
         val proxytags: List<Proxy> = listOf(),
-        val skin: String? = null,
-        val color: String? = null
+        var skin: String? = null,
+        var color: String? = null
 )
 
 @Serializable
 data class ServerSettings(
         @SerialName("skin_change_delay")
-        val skinChangeDelay: Int
+        var skinChangeDelay: Int = 60
 )

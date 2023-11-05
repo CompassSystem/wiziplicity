@@ -230,10 +230,6 @@ object ChatCommands {
         register("sw") { redirect(switchCommand) }
     }
 
-    private val PREFIX = Component.literal("").append(Component.translatable("wiziplicity.mod_name").withStyle(ChatFormatting.DARK_AQUA)).append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY))
-
-    private fun Component.withWiziplicityPrefix(): Component = PREFIX.copy().append(this)
-
     @JvmStatic
     fun parseChatCommand(message: String): Boolean {
         if (message.startsWith("pk;") || message.startsWith("pk!")) {

@@ -2,6 +2,7 @@ package compass_system.wiziplicity
 
 import compass_system.wiziplicity.command.Commands
 import compass_system.wiziplicity.config.ConfigHolder
+import compass_system.wiziplicity.config.FrontHolder
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import org.slf4j.Logger
@@ -14,9 +15,15 @@ object Main : ClientModInitializer {
     override fun onInitializeClient() {
         Commands.register()
 
-        ClientLifecycleEvents.CLIENT_STARTED.register { ConfigHolder.load() }
+        ClientLifecycleEvents.CLIENT_STARTED.register {
+            ConfigHolder.load()
+            FrontHolder.load()
+        }
 
         // todo: Should we use a shutdown hook instead?
-        ClientLifecycleEvents.CLIENT_STOPPING.register { ConfigHolder.save() }
+        ClientLifecycleEvents.CLIENT_STOPPING.register {
+            ConfigHolder.save()
+            FrontHolder.save()
+        }
     }
 }

@@ -6,31 +6,29 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToStream
-import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.client.Minecraft
 import java.lang.Exception
+import java.lang.IllegalStateException
 import java.nio.file.Files
 import kotlin.io.path.exists
 
 object ConfigHolder {
-    private val configPath = FabricLoader.getInstance().configDir.resolve("${Main.MOD_ID}.json")
-    internal lateinit var config: ConfigV1
+    private val configPath = getConfigDirectory()?.resolve("${Main.MOD_ID}.json")
+    internal var config: ConfigV1 = ConfigV1()
     internal var changed: Boolean = false
 
-    private val ignoreKeysJson = Json { ignoreUnknownKeys = true }
-    private val prettyJson = Json { prettyPrint = true }
-
     fun load() {
-        changed = false
+        if (configPath == null) {
+            Main.logger.error("Failed to load config due to config directory being missing and not having permission to create it.")
+            return
+        }
 
         if (configPath.exists()) {
             val contents = try {
                 Files.newBufferedReader(configPath).readText()
-            }
-            catch (error: Exception) {
+            } catch (error: Exception) {
                 Main.logger.error("Failed to read config: ", error)
-                config = ConfigV1()
                 return backupNewerOrInvalidConfig()
             }
 
@@ -38,31 +36,27 @@ object ConfigHolder {
                 ignoreKeysJson.decodeFromString<SchemaVersion>(contents).schemaVersion
             } catch (error: Exception) {
                 Main.logger.error("""Failed to parse config, cannot read "schema_version": """, error)
-                config = ConfigV1()
                 return backupNewerOrInvalidConfig(contents)
             }
 
             if (schemaVersion == 1) {
-                config = try {
-                    prettyJson.decodeFromString(contents)
+                try {
+                    config = prettyJson.decodeFromString(contents)
+                    changed = false
                 } catch (error: Exception) {
                     Main.logger.error("Failed to parse config: ", error)
-                    config = ConfigV1()
                     return backupNewerOrInvalidConfig(contents)
                 }
             } else {
                 Main.logger.error("Invalid schema version: $schemaVersion.")
-                config = ConfigV1()
                 return backupNewerOrInvalidConfig(contents)
             }
-        } else {
-            config = ConfigV1()
         }
     }
 
     private fun backupNewerOrInvalidConfig(contents: String? = null) {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val newFilePath = FabricLoader.getInstance().configDir.resolve("${Main.MOD_ID}-${now.date}-${now.time.hour}-${now.time.minute}-${now.time.second}.bak.json")
+        val newFilePath = configPath!!.resolveSibling("${Main.MOD_ID}-${now.date}-${now.time.hour}-${now.time.minute}-${now.time.second}.bak.json")
 
         try {
             Files.move(configPath, newFilePath)
@@ -81,6 +75,10 @@ object ConfigHolder {
     fun save(force: Boolean = false) {
         if (changed || force) {
             try {
+                if (configPath == null) {
+                    throw IllegalStateException("Unable to save config due to missing config directory.")
+                }
+
                 Files.newOutputStream(configPath).use {
                     prettyJson.encodeToStream(config, it)
                 }
@@ -89,6 +87,112 @@ object ConfigHolder {
                 Main.logger.error("Config file contents:")
                 Main.logger.error(prettyJson.encodeToString(config))
             }
+        }
+    }
+
+    fun preserveLastFronter(value: Boolean) {
+        if (value != config.preserveLastFronter) {
+            config.preserveLastFronter = value
+
+             changed = true
+        }
+    }
+
+    fun skinChangeDelay(value: Int) {
+        if (value != config.skinChangeDelay) {
+            config.skinChangeDelay = value
+
+            changed = true
+        }
+    }
+
+    // todo: overhaul with options e.g. do you want to edit / create copy of alias
+    fun configureServer(
+            address: String = Minecraft.getInstance().currentServer?.ip ?: "singleplayer",
+            action: ServerSettings.() -> Unit
+    ): String {
+        val existing = config.serverSettings[address]
+
+        if (existing != null) {
+            action.invoke(existing)
+        } else {
+            val alias = config.aliasedServerSettings[address]
+
+            val server = if (alias != null) {
+                config.aliasedServerSettings.remove(address)
+
+                config.serverSettings[alias]!!.copy()
+            } else {
+                ServerSettings()
+            }
+
+            action.invoke(server)
+            config.serverSettings[address] = server
+        }
+
+        changed = true
+
+        return address
+    }
+
+    // todo: add option not to delete original settings
+    fun createAlias(
+            from: String = Minecraft.getInstance().currentServer?.ip ?: "singleplayer",
+            to: String
+    ): String {
+        if (config.serverSettings.containsKey(from)) {
+            config.serverSettings.remove(from)
+        }
+
+        config.aliasedServerSettings[from] = to
+
+        return from
+    }
+
+    fun getTokens(format: String, allowPronouns: Boolean): NicknameTokens {
+        val regex = "\\{([A-z]+)\\}".toRegex()
+
+        val results = regex.findAll(format)
+
+        val validTokens = mutableListOf<String>()
+        val invalidTokens = mutableListOf<String>()
+
+        for (result in results) {
+            val value = result.groups[1]!!.value
+
+            if (isValidNicknameToken(value, allowPronouns)) {
+                validTokens.add(value)
+            } else {
+                invalidTokens.add(value)
+            }
+        }
+
+        return NicknameTokens(validTokens, invalidTokens)
+    }
+
+    private val validNicknameTokens = setOf("colour", "color", "name", "id", "pronouns")
+
+    private fun isValidNicknameToken(token: String, allowPronouns: Boolean): Boolean {
+        return if (token == "pronouns") {
+            allowPronouns
+        } else {
+            token in validNicknameTokens
+        }
+    }
+
+    fun setNickNameFormatWithPronouns(format: String) {
+        if (config.nicknameFormatWithPronouns != format) {
+            config.nicknameFormatWithPronouns = format
+
+            changed = true
+        }
+    }
+
+    fun setNickNameFormatNoPronouns(format: String) {
+        if (config.nicknameFormatNoPronouns != format) {
+            config.nicknameFormatNoPronouns = format
+
+            changed = true
         }
     }
 }
