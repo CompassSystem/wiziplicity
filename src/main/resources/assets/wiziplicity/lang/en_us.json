@@ -8,8 +8,55 @@
   "commands.wiziplicity.starstorm": "Vibrant colours burst forth from the sky as meteors rain down upon your opponent.",
   "commands.wiziplicity.flash": "A ball of green light appears above your head and flies towards your enemy, exploding on contact.",
   "commands.wiziplicity.rool": "\"What the fuck is a Pokémon?\"",
+
+  "command.wiziplicity.member.new.success": "Member \"%s\" created.",
+  "command.wiziplicity.member.new.failure": "Member named \"%s\" already exists.",
+
+  "command.wiziplicity.member.list.empty": "No members to list.",
+  "command.wiziplicity.member.list.header": "Members:",
+  "command.wiziplicity.member.list.line": "  - %s",
+
+  "command.wiziplicity.member.rename.success": "Member \"%s\" has been renamed to \"%s\"",
+  "command.wiziplicity.member.rename.failure": "cannot rename \"%s\" as a member named \"%s\" exists.",
+
+  "command.wiziplicity.member.displayname.success": "%s's display name is \"%s\".",
+  "command.wiziplicity.member.displayname.failure": "%s's has no display name.",
+  "command.wiziplicity.member.displayname.set": "%s's display name is now \"%s\".",
+
+  "command.wiziplicity.member.color.success": "%s's color is \"%s\".",
+  "command.wiziplicity.member.color.failure": "%s's has no color.",
+  "command.wiziplicity.member.color.set": "%s's color is now \"%s\".",
+
+  "command.wiziplicity.member.proxy.empty": "%s has no proxies.",
+  "command.wiziplicity.member.proxy.header": "%s's proxies:",
+  "command.wiziplicity.member.proxy.line": "  - %s",
+
+  "command.wiziplicity.member.proxy.add.success":  "Proxy \"%\" added to %s.",
+  "command.wiziplicity.member.proxy.add.exists":  "%s already has \"%s\" as a proxy.",
+  "command.wiziplicity.member.proxy.add.failure": "Failed to add proxy, \"%s\" is invalid.",
+
+  "command.wiziplicity.member.proxy.remove.success":  "Proxy \"%\" removed from %s.",
+  "command.wiziplicity.member.proxy.remove.exists":  "%s does not have the proxy \"%s\".",
+  "command.wiziplicity.member.proxy.remove.failure": "Failed to remove proxy, \"%s\" is invalid.",
+
+  "command.wiziplicity.member.proxy.set.success": "%s's only proxy is now \"%s\".",
+  "command.wiziplicity.member.proxy.set.failure": "Failed to set proxy, \"%s\" is invalid.",
+
+  "command.wiziplicity.member.delete.success": "Member %s has been deleted.",
+
+  "command.wiziplicity.member.pronouns.success": "%s's pronouns are \"%s\".",
+  "command.wiziplicity.member.pronouns.failure": "%s does not have pronouns set.",
+  "command.wiziplicity.member.pronouns.set": "%s's pronouns have been set to \"%s\".",
+
+  "command.wiziplicity.member.skin.success": "%s's skin is \"%s\".",
+  "command.wiziplicity.member.skin.failure": "%s does not have a skin set.",
+  "command.wiziplicity.member.skin.set": "%s's skin has been set to \"%s\".",
+
   "commands.wiziplicity.switch.out.success": "Switch out registered.",
   "commands.wiziplicity.switch.out.failed": "No one to switch out.",
+
+  "commands.wiziplicity.switch.headmate.success": "%s is now in front.",
+  "commands.wiziplicity.switch.headmate.failure": "%s is already in front.",
 
   "argument.wiziplicity.headmate.invalid": "Unknown headmate: '%s'",
   "argument.wiziplicity.server.invalid": "Unknown server: '%s'"

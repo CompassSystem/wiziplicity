@@ -240,11 +240,11 @@ object Commands {
                                     val proxyObj = Proxy.of(proxy, ::RuntimeException)
 
                                     if (headmate.second.addProxy(proxyObj)) {
-                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.success", headmate.first).withWiziplicityPrefix())
+                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.success", proxyObj.toString(), headmate.first).withWiziplicityPrefix())
 
                                         ConfigHolder.changed = true
                                     } else {
-                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.exists", headmate.first).withWiziplicityPrefix())
+                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.exists", headmate.first, proxyObj.toString()).withWiziplicityPrefix())
                                     }
                                 } catch (error: Exception) {
                                     source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.failure", proxy).withWiziplicityPrefix())
@@ -289,7 +289,7 @@ object Commands {
                                 val proxyObj = Proxy.of(proxy, ::RuntimeException)
 
                                 headmate.second.setProxy(proxyObj)
-                                source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.success", headmate.first).withWiziplicityPrefix())
+                                source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.success", headmate.first, proxyObj.toString()).withWiziplicityPrefix())
                                 ConfigHolder.changed = true
                             } catch (error: Exception) {
                                 source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.failure", proxy).withWiziplicityPrefix())
@@ -394,6 +394,9 @@ object Commands {
             literal("out") {
                 runs {
                     Minecraft.getInstance().connection?.sendCommand("nick clear")
+
+                    source.sendFeedback(Component.translatable("commands.wiziplicity.switch.out.success").withWiziplicityPrefix())
+
                     Command.SINGLE_SUCCESS
                 }
             }
@@ -402,6 +405,9 @@ object Commands {
                 runs {
                     val headmate = HeadmateArgumentType.getHeadmate(this, "headmate")
                     Minecraft.getInstance().connection?.sendCommand("nick set ${headmate.second.getStyledNickname()}")
+
+                    source.sendFeedback(Component.translatable("commands.wiziplicity.switch.headmate.success", headmate.first).withWiziplicityPrefix())
+
                     Command.SINGLE_SUCCESS
                 }
             }
