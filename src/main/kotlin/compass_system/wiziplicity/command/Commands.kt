@@ -56,7 +56,7 @@ object Commands {
                     }
 
                     if (path == null) {
-                        source.sendFeedback(Component.translatable("NOT FINDIES PATH"))
+                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_found"))
 
                         return@runs Command.SINGLE_SUCCESS
                     }
@@ -68,7 +68,7 @@ object Commands {
                     }
 
                     if (contents == null) {
-                        source.sendFeedback(Component.translatable("NOT READIES FILE"))
+                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_readable"))
 
                         return@runs Command.SINGLE_SUCCESS
                     }
@@ -76,7 +76,7 @@ object Commands {
                     val systemData = try {
                         ignoreKeysJson.decodeFromString<PluralKitDataExport>(contents)
                     } catch (_: Exception) {
-                        source.sendFeedback(Component.translatable("NOT NOMMABLE FILE"))
+                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_valid"))
 
                         return@runs Command.SINGLE_SUCCESS
                     }
@@ -93,7 +93,7 @@ object Commands {
 
                     ConfigHolder.changed = true
 
-                    source.sendFeedback(Component.translatable("WIN!"))
+                    source.sendFeedback(Component.translatable("commands.wiziplicity.import.success"))
 
                     Command.SINGLE_SUCCESS
                 }
@@ -432,12 +432,12 @@ object Commands {
                                 if (tokens.invalid.isEmpty() && tokens.valid.isNotEmpty()) {
                                     ConfigHolder.setNickNameFormatWithPronouns(format)
 
-                                    source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.with_pronouns.success").withWiziplicityPrefix())
+                                    source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.nickname_format.success").withWiziplicityPrefix())
                                 } else {
                                     if (tokens.valid.isEmpty()) {
-                                        source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.with_pronouns.no_valid_tokens").withWiziplicityPrefix())
+                                        source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.nickname_format.no_valid_tokens").withWiziplicityPrefix())
                                     } else {
-                                        source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.with_pronouns.invalid_tokens").withWiziplicityPrefix())
+                                        source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.nickname_format.invalid_tokens", tokens.invalid.joinToString { ", " }).withWiziplicityPrefix())
                                     }
                                 }
 
@@ -456,9 +456,13 @@ object Commands {
                                 if (tokens.invalid.isEmpty() && tokens.valid.isNotEmpty()) {
                                     ConfigHolder.setNickNameFormatNoPronouns(format)
 
-                                    source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.no_pronouns.success").withWiziplicityPrefix())
+                                    source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.nickname_format.success").withWiziplicityPrefix())
                                 } else {
-                                    source.sendFeedback(Component.translatable("command.wiziplicity.config.global.nickname_format.no_pronouns.failure").withWiziplicityPrefix())
+                                    if (tokens.valid.isEmpty()) {
+                                        source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.nickname_format.no_valid_tokens").withWiziplicityPrefix())
+                                    } else {
+                                        source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.nickname_format.invalid_tokens").withWiziplicityPrefix())
+                                    }
                                 }
 
                                 Command.SINGLE_SUCCESS
@@ -474,7 +478,7 @@ object Commands {
 
                             ConfigHolder.skinChangeDelay(delay)
 
-                            source.sendFeedback(Component.translatable("command.wiziplicity.config.global.skin_change_delay", delay).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.skin_change_delay", delay).withWiziplicityPrefix())
 
                             Command.SINGLE_SUCCESS
                         }
@@ -488,7 +492,11 @@ object Commands {
 
                             ConfigHolder.preserveLastFronter(preserveLastFronter)
 
-                            source.sendFeedback(Component.translatable("command.wiziplicity.config.global.preserve_last_fronter", preserveLastFronter).withWiziplicityPrefix())
+                            if (preserveLastFronter) {
+                                source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.preserve_last_fronter.true").withWiziplicityPrefix())
+                            } else {
+                                source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.preserve_last_fronter.false").withWiziplicityPrefix())
+                            }
 
                             Command.SINGLE_SUCCESS
                         }
@@ -506,7 +514,7 @@ object Commands {
                                 skinChangeDelay = delay
                             }
 
-                            source.sendFeedback(Component.translatable("command.wiziplicity.config.server.skin_change_delay", ip, delay).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("commands.wiziplicity.config.server.skin_change_delay", ip, delay).withWiziplicityPrefix())
 
                             Command.SINGLE_SUCCESS
                         }
@@ -520,7 +528,7 @@ object Commands {
 
                             val ip = ConfigHolder.createAlias(to = server.first)
 
-                            source.sendFeedback(Component.translatable("command.wiziplicity.config.server.alias", server.first, ip).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("commands.wiziplicity.config.server.alias", ip, server.first).withWiziplicityPrefix())
 
                             Command.SINGLE_SUCCESS
                         }

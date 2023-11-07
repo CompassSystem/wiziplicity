@@ -9,6 +9,11 @@
   "commands.wiziplicity.flash": "A ball of green light appears above your head and flies towards your enemy, exploding on contact.",
   "commands.wiziplicity.rool": "\"What the fuck is a Pokémon?\"",
 
+  "commands.wiziplicity.import.file_not_found": "Failed to find the file specified.",
+  "commands.wiziplicity.import.file_not_readable": "Failed to read the file.",
+  "commands.wiziplicity.import.file_not_valid": "Failed to find system data in file.",
+  "commands.wiziplicity.import.success": "Successfully imported members from file.",
+
   "command.wiziplicity.member.new.success": "Member \"%s\" created.",
   "command.wiziplicity.member.new.failure": "Member named \"%s\" already exists.",
 
@@ -57,6 +62,19 @@
 
   "commands.wiziplicity.switch.headmate.success": "%s is now in front.",
   "commands.wiziplicity.switch.headmate.failure": "%s is already in front.",
+
+  "commands.wiziplicity.config.global.nickname_format.success": "Nickname format set successfully.",
+  "commands.wiziplicity.config.global.nickname_format.no_valid_tokens": "Failed to set nickname format, no valid tokens found.",
+  "commands.wiziplicity.config.global.nickname_format.invalid_tokens": "Failed to set nickname format, invalid tokens found: %s.",
+
+  "commands.wiziplicity.config.global.skin_change_delay": "Skin change delay set to %s.",
+
+  "commands.wiziplicity.config.global.preserve_last_fronter.true": "Last front will be preserved across servers.",
+  "commands.wiziplicity.config.global.preserve_last_fronter.false": "Last front won't be preserved across servers.",
+
+  "commands.wiziplicity.config.server.skin_change_delay": "Skin change delay for %s set to %s.",
+
+  "commands.wiziplicity.config.server.alias": "\"%s\" is now aliased to \"%s\".",
 
   "argument.wiziplicity.headmate.invalid": "Unknown headmate: '%s'",
   "argument.wiziplicity.server.invalid": "Unknown server: '%s'"
