@@ -195,4 +195,31 @@ object ConfigHolder {
             changed = true
         }
     }
+
+    fun createHeadmate(id: String): Boolean {
+        return if (config.headmates.containsKey(id)) {
+            false
+        } else {
+            config.headmates[id] = Headmate()
+            changed = true
+
+            true
+        }
+    }
+
+    fun renameHeadmate(oldId: String, newId: String): Boolean {
+        return if (config.headmates.containsKey(newId)) {
+            false
+        } else {
+            config.headmates[newId] = config.headmates.remove(oldId)!!
+            changed = true
+
+            true
+        }
+    }
+
+    fun deleteHeadmate(id: String) {
+        config.headmates.remove(id)
+        changed = true
+    }
 }

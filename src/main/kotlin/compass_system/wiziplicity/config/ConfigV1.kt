@@ -10,7 +10,9 @@ import kotlinx.serialization.encoding.encodeStructure
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import java.lang.IllegalStateException
 
+// todo replace with/no pronouns with a separate pronouns format which changes {pronouns}
 @Serializable(with = ConfigV1Serializer::class)
 data class ConfigV1(
         var nicknameFormatNoPronouns: String? = null,
@@ -107,7 +109,43 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
 data class Proxy(
         val prefix: String? = null,
         val suffix: String? = null
-)
+) {
+    override fun toString(): String {
+        return if (prefix != null && suffix != null) {
+            throw IllegalStateException("Illegal proxy")
+        } else if (prefix != null) {
+            "${prefix}text"
+        } else {
+            "text${suffix}"
+        }
+    }
+
+    companion object {
+        fun of(value: String, errorCreator: (String) -> Exception): Proxy {
+            val left = value.substringBefore("text")
+
+            if (left == value) {
+                throw errorCreator("text not found in value")
+            }
+
+            if (left.isEmpty()) {
+                val right = value.substringAfter("text")
+                if (right.isEmpty()) {
+                    throw errorCreator("no prefix or suffix found")
+                } else {
+                    return Proxy(suffix = right)
+                }
+            } else {
+                val right = value.substringAfter("text")
+                if (right.isNotEmpty()) {
+                    throw errorCreator("both prefix and suffix found, cannot decode illegal proxy.")
+                } else {
+                    return Proxy(prefix = left)
+                }
+            }
+        }
+    }
+}
 
 class ProxySerializer : KSerializer<Proxy> {
     override val descriptor = PrimitiveSerialDescriptor("compass_system.wiziplicity.config.ProxySerializer", PrimitiveKind.STRING)
@@ -115,32 +153,12 @@ class ProxySerializer : KSerializer<Proxy> {
     override fun deserialize(decoder: Decoder): Proxy {
         val value = decoder.decodeString()
 
-        val left = value.substringBefore("text")
-
-        if (left == value) {
-            throw SerializationException("text not found in value")
-        }
-
-        if (left.isEmpty()) {
-            val right = value.substringAfter("text")
-            if (right.isEmpty()) {
-                throw SerializationException("no prefix or suffix found")
-            } else {
-                return Proxy(suffix = right)
-            }
-        } else {
-            val right = value.substringAfter("text")
-            if (right.isNotEmpty()) {
-                throw SerializationException("both prefix and suffix found, cannot deserialize illegal proxy.")
-            } else {
-                return Proxy(prefix = left)
-            }
-        }
+        return Proxy.of(value, errorCreator = ::SerializationException)
     }
 
     override fun serialize(encoder: Encoder, value: Proxy) {
         if (value.prefix != null && value.suffix != null) {
-            throw IllegalArgumentException("Both prefix and suffix found, cannot serialize illegal proxy.")
+            throw SerializationException("Both prefix and suffix found, cannot serialize illegal proxy.")
         }else if (value.prefix != null) {
             encoder.encodeString("${value.prefix}text")
         } else if (value.suffix != null) {
@@ -155,10 +173,50 @@ data class Headmate(
         var name: String? = null,
         var nickname: String? = null,
         var pronouns: String? = null,
-        val proxytags: List<Proxy> = listOf(),
+        val proxytags: MutableList<Proxy> = mutableListOf(),
         var skin: String? = null,
         var color: String? = null
-)
+) {
+    fun addProxy(proxyObj: Proxy) = if (proxyObj in proxytags) {
+        false
+    } else {
+        proxytags.add(proxyObj)
+
+        true
+    }
+
+    fun removeProxy(proxyObj: Proxy) = if (proxyObj !in proxytags) {
+        false
+    } else {
+        proxytags.remove(proxyObj)
+
+        true
+    }
+
+    fun setProxy(proxyObj: Proxy) {
+        proxytags.clear()
+        proxytags.add(proxyObj)
+    }
+
+    fun getStyledNickname(): String {
+        val color = this.color ?: "white"
+        val name = nickname ?: ConfigHolder.config.headmates.filter { it.value == this }.keys.first()
+        val pronouns = pronouns
+
+        return if (pronouns == null) {
+            ConfigHolder.config.nicknameFormatNoPronouns!!
+                    .replace("{color}", color)
+                    .replace("{colour}", color)
+                    .replace("{name}", name)
+        } else {
+            ConfigHolder.config.nicknameFormatWithPronouns!!
+                    .replace("{pronouns}", pronouns)
+                    .replace("{color}", color)
+                    .replace("{colour}", color)
+                    .replace("{name}", name)
+        }
+    }
+}
 
 @Serializable
 data class ServerSettings(

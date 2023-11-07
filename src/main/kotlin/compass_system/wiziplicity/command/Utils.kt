@@ -8,6 +8,9 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
 import com.mojang.brigadier.tree.LiteralCommandNode
+import compass_system.wiziplicity.config.Proxy
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 
@@ -54,4 +57,26 @@ internal fun <Source, Builder : ArgumentBuilder<Source, Builder>> ArgumentBuilde
     executes {
         action.invoke(it)
     }
+}
+
+@Serializable
+data class PluralKitDataExport(
+        val members: List<PluralKitMember>
+)
+
+@Serializable
+data class PluralKitMember(
+        val name: String,
+        val color: String?,
+        val pronouns: String?,
+        @SerialName("proxy_tags")
+        val proxyTags: List<PluralKitProxy>
+)
+
+@Serializable
+data class PluralKitProxy(
+        val prefix: String? = null,
+        val suffix: String? = null
+) {
+    fun toConfigProxy() = Proxy(prefix, suffix)
 }
