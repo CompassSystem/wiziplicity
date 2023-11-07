@@ -58,21 +58,21 @@ The config will store some general settings such as a default nickname format as
 ## Nickname Format
 This format will be used when a headmate hasn't got their own nickname defined.
 
-A few placeholders will be supported namely `colour` / `color`, `name`, `id`, and `pronouns`
+A few placeholders will be supported namely `colour` / `color`, `name`, and `pronouns`
 
 If the `name` value is not provided then it will default on `id`.
 
 If the `color` value is not provided then it will default the color `white`.
 ```json5
 {
-  "id": "needle",
-  "name": "Needle",
-  "pronouns": "it/its",
-  "colour": "#49D2C4",
+  "id": "brenn",
+  "name": "Brenn",
+  "pronouns": "she/her",
+  "colour": "#B58EDF",
   // Values above provided as reference
   "nickname_format": {
-    "no_pronouns": "<c:{colour}>{name}</c> <gold>🧭</gold>",
-    "with_pronouns": "<c:{colour}>{name}</c> <gray>({pronouns})</gray> <gold>🧭</gold>"
+    "no_pronouns": "<c:{colour}>{name}</c> <blue>🪣</blue>",
+    "with_pronouns": "<c:{colour}>{name}</c> <gray>({pronouns})</gray> <blue>🪣</blue>"
   }
 }
 ```
@@ -99,11 +99,11 @@ Each entry will store a few details including: `id` (object key), and optionally
 {
   "headmates": {
     "needle": {
-      "name": "Needle",
-      "pronouns": "it/its",
+      "name": "Brenn",
+      "pronouns": "she/her",
       "color": "#49D2C4",
-      "skin": "https://example.com",
-      "proxytags": ["text-needle"]
+      "skin": "https://example.com/skin.png",
+      "proxytags": ["text-brenn"]
     }
   }
 }
