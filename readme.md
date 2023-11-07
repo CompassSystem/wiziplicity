@@ -1,5 +1,5 @@
 # 🧙⚙️ Wiziplicity
-A helper mod for systems to avoid having to change nicknames, partially integrates with PluralKit.
+A client side helper mod for plural folk to help with changing [nicknames](https://modrinth.com/mod/styled-nicknames) and [skins](https://modrinth.com/mod/fabrictailor).
 
 For information about plurality see: https://morethanone.info/
 
@@ -18,7 +18,7 @@ It is recommended you also set a display name, pronouns, and color for each memb
 ```
 pk;m brenn displayname Brenn
 pk;m brenn pronouns she/her
-pk;m brenn color #49D2C4
+pk;m brenn color #B58EDF
 ```
 > Note: colors can be any valid 6 digit hex, #ffffff, or any of the builtin minecraft colors:
 >
@@ -55,3 +55,4 @@ We were in a VC whilst trying to come up with names for this mod. We thought up 
 Another person said Wizzerd, a misspelling of Wizard and a reference to the Discworld book series.
 
 From wizard, which is a program which helps the user through a complex process, the mod name Wiziplicity was suggested, a combination of wizard and multiplicity.
+
