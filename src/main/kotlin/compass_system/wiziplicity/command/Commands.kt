@@ -61,10 +61,18 @@ object Commands {
                         return@runs Command.SINGLE_SUCCESS
                     }
 
-                    val contents = if (path is Path) {
-                        path.readText(charset = StandardCharsets.UTF_8)
-                    } else {
-                        null
+                    val contents = when (path) {
+                        is Path -> path.readText(charset = StandardCharsets.UTF_8)
+
+                        is URI -> try {
+                            val stream = path.toURL().openStream()
+
+                            stream.reader(StandardCharsets.UTF_8).readText()
+                        } catch (_: Exception) {
+                            null
+                        }
+
+                        else -> null
                     }
 
                     if (contents == null) {
