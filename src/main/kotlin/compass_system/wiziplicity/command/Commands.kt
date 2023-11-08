@@ -56,7 +56,7 @@ object Commands {
                     }
 
                     if (path == null) {
-                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_found"))
+                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_found").withWiziplicityPrefix())
 
                         return@runs Command.SINGLE_SUCCESS
                     }
@@ -68,7 +68,7 @@ object Commands {
                     }
 
                     if (contents == null) {
-                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_readable"))
+                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_readable").withWiziplicityPrefix())
 
                         return@runs Command.SINGLE_SUCCESS
                     }
@@ -76,7 +76,7 @@ object Commands {
                     val systemData = try {
                         ignoreKeysJson.decodeFromString<PluralKitDataExport>(contents)
                     } catch (_: Exception) {
-                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_valid"))
+                        source.sendFeedback(Component.translatable("commands.wiziplicity.import.file_not_valid").withWiziplicityPrefix())
 
                         return@runs Command.SINGLE_SUCCESS
                     }
@@ -93,7 +93,7 @@ object Commands {
 
                     ConfigHolder.changed = true
 
-                    source.sendFeedback(Component.translatable("commands.wiziplicity.import.success"))
+                    source.sendFeedback(Component.translatable("commands.wiziplicity.import.success").withWiziplicityPrefix())
 
                     Command.SINGLE_SUCCESS
                 }
