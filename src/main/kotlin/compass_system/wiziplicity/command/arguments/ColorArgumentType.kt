@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
 
 class ColorArgumentType : ArgumentType<String> {
     private val hexRegex = "^#[a-fA-F0-9]{6}$".toRegex()
-    private val colours: Set<String> = ChatFormatting.entries.filter { it.isColor }.map { it.name.lowercase() }.toSet()
+    private val colours: Set<String> = ChatFormatting.entries.filter { it.isColor }.map { it.name.lowercase() }.toSet() + setOf("orange", "grey", "pink", "dark_grey")
 
     override fun parse(reader: StringReader): String {
         val value = reader.readTillSpace()
