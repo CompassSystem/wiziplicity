@@ -199,7 +199,17 @@ data class Headmate(
     }
 
     fun getStyledNickname(): String {
-        val color = this.color ?: "white"
+        // fix for: https://github.com/Patbox/TextPlaceholderAPI/issues/44
+        val color = (this.color ?: "white").let {
+            when (it) {
+                "orange" -> "gold"
+                "pink" -> "light_purple"
+                "grey" -> "gray"
+                "dark_grey" -> "dark_gray"
+                else -> it
+            }
+        }
+
         val name = nickname ?: ConfigHolder.config.headmates.filter { it.value == this }.keys.first()
         val pronouns = pronouns
 
