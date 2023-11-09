@@ -32,7 +32,7 @@ Usage: pk;[member|m] new <id>
        pk;m <id> [proxy|proxytags] <proxy>
        pk;m <id> [proxy|proxytags] [add|remove] <proxy>
        pk;m <id> skin
-       pk;m <id> skin <url>
+       pk;m <id> skin [classic|slim] <url>
        /wiziplicity member ... (refer to above, shorthands not avaliable for slash commands)
 ```
 ## Switch Command
@@ -103,6 +103,7 @@ Each entry will store a few details including: `id` (object key), and optionally
       "pronouns": "she/her",
       "color": "#49D2C4",
       "skin": "https://example.com/skin.png",
+      "skin_type": "classic",
       "proxytags": ["text-brenn"]
     }
   }

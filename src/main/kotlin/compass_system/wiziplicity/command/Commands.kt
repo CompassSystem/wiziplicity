@@ -9,6 +9,7 @@ import compass_system.wiziplicity.Main
 import compass_system.wiziplicity.command.arguments.ColorArgumentType
 import compass_system.wiziplicity.command.arguments.HeadmateArgumentType
 import compass_system.wiziplicity.command.arguments.ServerArgumentType
+import compass_system.wiziplicity.command.arguments.SkinTypeArgumentType
 import compass_system.wiziplicity.config.*
 import compass_system.wiziplicity.config.ignoreKeysJson
 import compass_system.wiziplicity.misc.CommandQueue
@@ -366,9 +367,10 @@ object Commands {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
                         val skin = headmate.second.skin
+                        val skinType = headmate.second.skinType
 
-                        if (skin != null) {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.success", headmate.first, skin).withWiziplicityPrefix())
+                        if (skin != null && skinType != null) {
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.success", headmate.first, skinType, skin).withWiziplicityPrefix())
                         } else {
                             source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.failure", headmate.first).withWiziplicityPrefix())
                         }
@@ -376,17 +378,21 @@ object Commands {
                         Command.SINGLE_SUCCESS
                     }
 
-                    requiredArgument("url", StringArgumentType.greedyString()) {
-                        runs {
-                            val headmate = HeadmateArgumentType.getHeadmate(this, "id")
-                            val url = StringArgumentType.getString(this, "url")
+                    requiredArgument("skin_type", SkinTypeArgumentType.skinType()) {
+                        requiredArgument("url", StringArgumentType.greedyString()) {
+                            runs {
+                                val headmate = HeadmateArgumentType.getHeadmate(this, "id")
+                                val skinType = SkinTypeArgumentType.getSkinType(this, "skin_type")
+                                val url = StringArgumentType.getString(this, "url")
 
-                            headmate.second.skin = url
-                            ConfigHolder.changed = true
+                                headmate.second.skin = url
+                                headmate.second.skinType = skinType
+                                ConfigHolder.changed = true
 
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.set", headmate.first, url).withWiziplicityPrefix())
+                                source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.set", headmate.first, skinType, url).withWiziplicityPrefix())
 
-                            Command.SINGLE_SUCCESS
+                                Command.SINGLE_SUCCESS
+                            }
                         }
                     }
                 }

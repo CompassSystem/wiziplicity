@@ -90,12 +90,11 @@ data class SwitchSkin(val headmate: String?) : QueuedCommand {
         if (headmate == null) {
             sendCommand("skin clear")
         } else {
-            ConfigHolder.config.headmates[headmate]!!.skin.let {
-                if (it == null) {
+            ConfigHolder.config.headmates[headmate]!!.let {
+                if (it.skin == null || it.skinType == null) {
                     sendCommand("skin clear")
                 } else {
-                    // todo: fix, needs skin type.
-//                    sendCommand("skin set URL <type> $it")
+                    sendCommand("skin set URL ${it.skinType} ${it.skin}")
                 }
             }
         }

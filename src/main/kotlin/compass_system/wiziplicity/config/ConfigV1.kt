@@ -175,6 +175,8 @@ data class Headmate(
         var pronouns: String? = null,
         val proxytags: MutableList<Proxy> = mutableListOf(),
         var skin: String? = null,
+        @SerialName("skin_type")
+        var skinType: String? = null,
         var color: String? = null
 ) {
     fun addProxy(proxyObj: Proxy) = if (proxyObj in proxytags) {

@@ -53,9 +53,9 @@
   "command.wiziplicity.member.pronouns.failure": "%s does not have pronouns set.",
   "command.wiziplicity.member.pronouns.set": "%s's pronouns have been set to \"%s\".",
 
-  "command.wiziplicity.member.skin.success": "%s's skin is \"%s\".",
+  "command.wiziplicity.member.skin.success": "%s's skin is %s, \"%s\".",
   "command.wiziplicity.member.skin.failure": "%s does not have a skin set.",
-  "command.wiziplicity.member.skin.set": "%s's skin has been set to \"%s\".",
+  "command.wiziplicity.member.skin.set": "%s's skin has been set to %s, \"%s\".",
 
   "commands.wiziplicity.switch.out.success": "Switch out registered.",
   "commands.wiziplicity.switch.out.failed": "No one to switch out.",
@@ -77,5 +77,6 @@
   "commands.wiziplicity.config.server.alias": "\"%s\" is now aliased to \"%s\".",
 
   "argument.wiziplicity.headmate.invalid": "Unknown headmate: '%s'",
-  "argument.wiziplicity.server.invalid": "Unknown server: '%s'"
+  "argument.wiziplicity.server.invalid": "Unknown server: '%s'",
+  "argument.wiziplicity.skin_type.invalid": "Unknown skin type: '%s'"
 }
