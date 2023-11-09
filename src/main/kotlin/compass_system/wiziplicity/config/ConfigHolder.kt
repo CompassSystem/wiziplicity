@@ -87,6 +87,8 @@ object ConfigHolder {
                 Main.logger.error("Config file contents:")
                 Main.logger.error(prettyJson.encodeToString(config))
             }
+
+            changed = false
         }
     }
 
@@ -170,7 +172,7 @@ object ConfigHolder {
         return NicknameTokens(validTokens, invalidTokens)
     }
 
-    private val validNicknameTokens = setOf("colour", "color", "name", "id", "pronouns")
+    private val validNicknameTokens = setOf("colour", "color", "name", "pronouns")
 
     private fun isValidNicknameToken(token: String, allowPronouns: Boolean): Boolean {
         return if (token == "pronouns") {
