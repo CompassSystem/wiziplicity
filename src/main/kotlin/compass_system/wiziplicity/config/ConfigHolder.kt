@@ -7,9 +7,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.encodeToStream
-import net.minecraft.client.Minecraft
 import java.lang.Exception
-import java.lang.IllegalStateException
 import java.nio.file.Files
 import kotlin.io.path.exists
 
@@ -74,9 +72,14 @@ object ConfigHolder {
     @OptIn(ExperimentalSerializationApi::class)
     fun save(force: Boolean = false) {
         if (changed || force) {
+            changed = false
+
             try {
                 if (configPath == null) {
-                    throw IllegalStateException("Unable to save config due to missing config directory.")
+                    Main.logger.error("Failed to save config due to missing config directory.")
+                    Main.logger.error("Config file contents:")
+                    Main.logger.error(prettyJson.encodeToString(config))
+                    return
                 }
 
                 Files.newOutputStream(configPath).use {
@@ -87,8 +90,6 @@ object ConfigHolder {
                 Main.logger.error("Config file contents:")
                 Main.logger.error(prettyJson.encodeToString(config))
             }
-
-            changed = false
         }
     }
 
@@ -96,7 +97,7 @@ object ConfigHolder {
         if (value != config.preserveLastFronter) {
             config.preserveLastFronter = value
 
-             changed = true
+            changed = true
         }
     }
 
@@ -108,9 +109,21 @@ object ConfigHolder {
         }
     }
 
+    fun getSkinChangeDelay(): Int {
+        val server = Main.currentServer()
+
+        val serverEntry = if (config.aliasedServerSettings.containsKey(server)) {
+            config.serverSettings[config.aliasedServerSettings[server]]
+        } else {
+            config.serverSettings[server]
+        }
+
+        return serverEntry?.skinChangeDelay ?: config.skinChangeDelay
+    }
+
     // todo: overhaul with options e.g. do you want to edit / create copy of alias
     fun configureServer(
-            address: String = Minecraft.getInstance().currentServer?.ip ?: "singleplayer",
+            address: String = Main.currentServer(),
             action: ServerSettings.() -> Unit
     ): String {
         val existing = config.serverSettings[address]
@@ -139,7 +152,7 @@ object ConfigHolder {
 
     // todo: add option not to delete original settings
     fun createAlias(
-            from: String = Minecraft.getInstance().currentServer?.ip ?: "singleplayer",
+            from: String = Main.currentServer(),
             to: String
     ): String {
         if (config.serverSettings.containsKey(from)) {

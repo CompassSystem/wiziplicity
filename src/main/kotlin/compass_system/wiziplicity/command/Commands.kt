@@ -11,9 +11,10 @@ import compass_system.wiziplicity.command.arguments.HeadmateArgumentType
 import compass_system.wiziplicity.command.arguments.ServerArgumentType
 import compass_system.wiziplicity.config.*
 import compass_system.wiziplicity.config.ignoreKeysJson
+import compass_system.wiziplicity.misc.CommandQueue
+import compass_system.wiziplicity.misc.Switch
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import java.net.URI
 import java.nio.charset.StandardCharsets
@@ -94,7 +95,7 @@ object Commands {
                     systemData.members.forEach { headmate ->
                         ConfigHolder.config.headmates[headmate.name] = Headmate(
                                 pronouns = headmate.pronouns,
-                                color =  headmate.color?.let { "#$it" },
+                                color = headmate.color?.let { "#$it" },
                                 proxytags = headmate.proxyTags.map { it.toConfigProxy() }.toMutableList()
                         )
                     }
@@ -135,7 +136,7 @@ object Commands {
                         source.sendFeedback(Component.translatable("command.wiziplicity.member.list.empty").withWiziplicityPrefix())
                     } else {
                         source.sendFeedback(Component.translatable("command.wiziplicity.member.list.header").withWiziplicityPrefix())
-                        ConfigHolder.config.headmates.forEach { (id, headmate) ->
+                        ConfigHolder.config.headmates.forEach { (id, _) ->
                             source.sendFeedback(Component.translatable("command.wiziplicity.member.list.line", id))
                         }
                     }
@@ -176,7 +177,7 @@ object Commands {
                         Command.SINGLE_SUCCESS
                     }
 
-                    requiredArgument("name", StringArgumentType.string()) {
+                    requiredArgument("name", StringArgumentType.greedyString()) {
                         runs {
                             val headmate = HeadmateArgumentType.getHeadmate(this, "id")
                             val displayName = StringArgumentType.getString(this, "name")
@@ -191,7 +192,7 @@ object Commands {
                     }
                 }
 
-                val colorAction: LiteralArgumentBuilder<FabricClientCommandSource>.() -> Unit  = {
+                val colorAction: LiteralArgumentBuilder<FabricClientCommandSource>.() -> Unit = {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
                         val color = headmate.second.color
@@ -346,7 +347,7 @@ object Commands {
                         Command.SINGLE_SUCCESS
                     }
 
-                    requiredArgument("pronouns", StringArgumentType.string()) {
+                    requiredArgument("pronouns", StringArgumentType.greedyString()) {
                         runs {
                             val headmate = HeadmateArgumentType.getHeadmate(this, "id")
                             val pronouns = StringArgumentType.getString(this, "pronouns")
@@ -401,7 +402,7 @@ object Commands {
         val switchCommand = literal<FabricClientCommandSource>("switch") {
             literal("out") {
                 runs {
-                    Minecraft.getInstance().connection?.sendCommand("nick clear")
+                    CommandQueue.add(Switch(null))
 
                     source.sendFeedback(Component.translatable("commands.wiziplicity.switch.out.success").withWiziplicityPrefix())
 
@@ -412,7 +413,8 @@ object Commands {
             requiredArgument("headmate", HeadmateArgumentType.headmate()) {
                 runs {
                     val headmate = HeadmateArgumentType.getHeadmate(this, "headmate")
-                    Minecraft.getInstance().connection?.sendCommand("nick set ${headmate.second.getStyledNickname()}")
+
+                    CommandQueue.add(Switch(headmate.first))
 
                     source.sendFeedback(Component.translatable("commands.wiziplicity.switch.headmate.success", headmate.first).withWiziplicityPrefix())
 

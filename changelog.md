@@ -1,0 +1,8 @@
+- Allow importing PK systems via URL.
+- Support color aliases from PlaceholderAPI (`grey`, `orange`, `pink`, `dark_grey`)
+- Fix feedback given by import command not being prefixed by `Wiziplicity |`
+- Properly depend on fabric api and fabric language kotlin
+- Data saved to the disk now properly keeps track of if it was changed.
+- Data now trys to save any changes every 30 seconds.
+- Rollback fabric api and fabric language kotlin requirements
+- Last fronter can now be preserved across servers, well only nicknames.
