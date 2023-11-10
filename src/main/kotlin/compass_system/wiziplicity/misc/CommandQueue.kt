@@ -105,7 +105,7 @@ data class SwitchSkin(val headmate: String?) : QueuedCommand {
     }
 }
 
-data class SendMessage(val headmate: String, val message: String) : QueuedCommand {
+data class SendMessage(val headmate: String?, val message: String) : QueuedCommand {
     override fun canProcess() = true
 
     override fun process(): List<QueuedCommand> {

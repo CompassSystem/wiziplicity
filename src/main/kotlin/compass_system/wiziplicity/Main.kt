@@ -92,6 +92,12 @@ object Main : ClientModInitializer {
             }
         }
 
+        val intendedFront = FrontHolder.getIntendedFront()
+        if (FrontHolder.getNicknameFront() != intendedFront) {
+            CommandQueue.add(SendMessage(intendedFront, message))
+            return true
+        }
+
         return false
     }
 }
