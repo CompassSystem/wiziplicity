@@ -69,8 +69,11 @@
 
   "commands.wiziplicity.config.global.skin_change_delay": "Skin change delay set to %s.",
 
-  "commands.wiziplicity.config.global.preserve_last_fronter.true": "Last front will be preserved across servers.",
-  "commands.wiziplicity.config.global.preserve_last_fronter.false": "Last front won't be preserved across servers.",
+  "commands.wiziplicity.config.global.preserve_last_fronter.true": "Last fronter will be preserved across servers.",
+  "commands.wiziplicity.config.global.preserve_last_fronter.false": "Last fronter won't be preserved across servers.",
+
+  "commands.wiziplicity.config.global.case_sensitive_proxies.true": "Proxy tags are now case sensitive.",
+  "commands.wiziplicity.config.global.case_sensitive_proxies.false": "Proxy tags are now case insensitive.",
 
   "commands.wiziplicity.config.server.skin_change_delay": "Skin change delay for %s set to %s.",
 

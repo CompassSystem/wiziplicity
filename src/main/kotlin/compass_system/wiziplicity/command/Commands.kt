@@ -518,6 +518,24 @@ object Commands {
                         }
                     }
                 }
+
+                literal("case_sensitive_proxies") {
+                    requiredArgument("boolean", BoolArgumentType.bool()) {
+                        runs {
+                            val caseSensitiveProxies = BoolArgumentType.getBool(this, "boolean")
+
+                            ConfigHolder.caseSensitiveProxies(caseSensitiveProxies)
+
+                            if (caseSensitiveProxies) {
+                                source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.case_sensitive_proxies.true").withWiziplicityPrefix())
+                            } else {
+                                source.sendFeedback(Component.translatable("commands.wiziplicity.config.global.case_sensitive_proxies.false").withWiziplicityPrefix())
+                            }
+
+                            Command.SINGLE_SUCCESS
+                        }
+                    }
+                }
             }
 
             literal("server") {

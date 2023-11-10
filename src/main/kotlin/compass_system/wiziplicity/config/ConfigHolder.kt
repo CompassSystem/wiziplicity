@@ -101,6 +101,14 @@ object ConfigHolder {
         }
     }
 
+    fun caseSensitiveProxies(value: Boolean) {
+        if (value != config.caseSensitiveProxies) {
+            config.caseSensitiveProxies = value
+
+            changed = true
+        }
+    }
+
     fun skinChangeDelay(value: Int) {
         if (value != config.skinChangeDelay) {
             config.skinChangeDelay = value
