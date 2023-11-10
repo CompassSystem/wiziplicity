@@ -38,6 +38,7 @@
 
   "command.wiziplicity.member.proxy.add.success":  "Proxy \"%\" added to %s.",
   "command.wiziplicity.member.proxy.add.exists":  "%s already has \"%s\" as a proxy.",
+  "command.wiziplicity.member.proxy.add.exists_other":  "Cannot add \"%s\" to %s as it's already defined for %s.",
   "command.wiziplicity.member.proxy.add.failure": "Failed to add proxy, \"%s\" is invalid.",
 
   "command.wiziplicity.member.proxy.remove.success":  "Proxy \"%\" removed from %s.",
@@ -45,6 +46,7 @@
   "command.wiziplicity.member.proxy.remove.failure": "Failed to remove proxy, \"%s\" is invalid.",
 
   "command.wiziplicity.member.proxy.set.success": "%s's only proxy is now \"%s\".",
+  "command.wiziplicity.member.proxy.set.exists_other": "Failed to set proxy to \"%s\" as it's already defined for %s",
   "command.wiziplicity.member.proxy.set.failure": "Failed to set proxy, \"%s\" is invalid.",
 
   "command.wiziplicity.member.delete.success": "Member %s has been deleted.",

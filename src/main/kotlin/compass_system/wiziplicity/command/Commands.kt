@@ -249,6 +249,16 @@ object Commands {
                                 try {
                                     val proxyObj = Proxy.of(proxy, ::RuntimeException)
 
+                                    ConfigHolder.config.headmates.forEach { (id, iHeadmate) ->
+                                        if (proxyObj in iHeadmate.proxytags) {
+                                            if (headmate.first != id) { // headmate.first == id is handled later
+                                                source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.exists_other", proxyObj.toString(), headmate.first, id).withWiziplicityPrefix())
+
+                                                return@runs Command.SINGLE_SUCCESS
+                                            }
+                                        }
+                                    }
+
                                     if (headmate.second.addProxy(proxyObj)) {
                                         source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.success", proxyObj.toString(), headmate.first).withWiziplicityPrefix())
 
@@ -298,12 +308,21 @@ object Commands {
                             try {
                                 val proxyObj = Proxy.of(proxy, ::RuntimeException)
 
+                                ConfigHolder.config.headmates.forEach { (id, iHeadmate) ->
+                                    if (proxyObj in iHeadmate.proxytags) {
+                                        if (headmate.first != id) {
+                                            source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.exists_other", proxyObj.toString(), id).withWiziplicityPrefix())
+
+                                            return@runs Command.SINGLE_SUCCESS
+                                        }
+                                    }
+                                }
+
                                 headmate.second.setProxy(proxyObj)
                                 source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.success", headmate.first, proxyObj.toString()).withWiziplicityPrefix())
                                 ConfigHolder.changed = true
                             } catch (error: Exception) {
                                 source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.failure", proxy).withWiziplicityPrefix())
-                                Main.logger.error("POYO! ", error)
                             }
 
                             Command.SINGLE_SUCCESS
