@@ -19,6 +19,7 @@ data class ConfigV1(
         var nicknameFormatWithPronouns: String? = null,
         var skinChangeDelay: Int = 60,
         var preserveLastFronter: Boolean = true,
+        var caseSensitiveProxies: Boolean = true,
         val headmates: MutableMap<String, Headmate> = mutableMapOf(),
         val serverSettings: MutableMap<String, ServerSettings> = mutableMapOf(),
         val aliasedServerSettings: MutableMap<String, String> = mutableMapOf()
@@ -26,11 +27,12 @@ data class ConfigV1(
 
 class ConfigV1Serializer : KSerializer<ConfigV1> {
     @OptIn(ExperimentalSerializationApi::class)
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ConfigV0") {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ConfigV1") {
         element<Int>("schema_version")
         element("nickname_format", mapSerialDescriptor<String, String>())
         element<Int>("skin_change_delay")
         element<Boolean>("preserve_last_fronter")
+        element<Boolean>("case_sensitive_proxies")
         element("headmates", mapSerialDescriptor<String, Headmate>())
         element("server_settings", mapSerialDescriptor<String, JsonElement>())
     }
@@ -56,8 +58,9 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
             encodeSerializableElement(descriptor, 1, serializer<Map<String, String>>(), nicknames)
             encodeIntElement(descriptor, 2, value.skinChangeDelay)
             encodeBooleanElement(descriptor, 3, value.preserveLastFronter)
-            encodeSerializableElement(descriptor, 4, serializer<Map<String, Headmate>>(), value.headmates)
-            encodeSerializableElement(descriptor, 5, serializer<Map<String, JsonElement>>(), combinedSettingsMap)
+            encodeBooleanElement(descriptor, 4, value.caseSensitiveProxies)
+            encodeSerializableElement(descriptor, 5, serializer<Map<String, Headmate>>(), value.headmates)
+            encodeSerializableElement(descriptor, 6, serializer<Map<String, JsonElement>>(), combinedSettingsMap)
         }
     }
 
@@ -65,6 +68,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
         var nicknames: Map<String, String> = emptyMap()
         var skinChangeDelay: Int = 60
         var preserveLastFronter = true
+        var caseSensitiveProxies = true
         var headmates: Map<String, Headmate> = emptyMap()
         var combinedSettings: Map<String, JsonElement> = emptyMap()
 
@@ -82,8 +86,9 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
                 1 -> nicknames = decodeSerializableElement(descriptor, 1, serializer<Map<String, String>>())
                 2 -> skinChangeDelay = decodeIntElement(descriptor, 2)
                 3 -> preserveLastFronter = decodeBooleanElement(descriptor, 3)
-                4 -> headmates = decodeSerializableElement(descriptor, 4, serializer<Map<String, Headmate>>())
-                5 -> combinedSettings = decodeSerializableElement(descriptor, 5, serializer<Map<String, JsonElement>>())
+                4 -> caseSensitiveProxies = decodeBooleanElement(descriptor, 3)
+                5 -> headmates = decodeSerializableElement(descriptor, 4, serializer<Map<String, Headmate>>())
+                6 -> combinedSettings = decodeSerializableElement(descriptor, 5, serializer<Map<String, JsonElement>>())
 
                 else -> throw SerializationException("Unexpected index $index")
             }
@@ -97,6 +102,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
                 nicknameFormatWithPronouns = nicknames["with_pronouns"],
                 skinChangeDelay = skinChangeDelay,
                 preserveLastFronter = preserveLastFronter,
+                caseSensitiveProxies = caseSensitiveProxies,
                 headmates = headmates.toMutableMap(),
                 serverSettings = serverSettings.toMutableMap(),
                 aliasedServerSettings = aliasedServers.toMutableMap()

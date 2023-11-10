@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.minecraft.client.Minecraft
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.IllegalStateException
 
 object Main : ClientModInitializer {
     internal const val MOD_ID = "wiziplicity"
@@ -79,15 +80,15 @@ object Main : ClientModInitializer {
             val headmate = identifiedProxy.first
             val proxy = identifiedProxy.second
 
-            if (proxy.prefix != null) {
-                if (message.startsWith(proxy.prefix)) {
+            if (proxy in message) {
+                if (proxy.prefix != null) {
                     CommandQueue.add(SendMessage(headmate, message.takeLast(message.length - proxy.prefix.length).trimStart()))
-                    return true
-                }
-            } else if (proxy.suffix != null) {
-                if (message.endsWith(proxy.suffix)) {
+
+                    return  true
+                } else if (proxy.suffix != null) {
                     CommandQueue.add(SendMessage(headmate, message.take(message.length - proxy.suffix.length).trimEnd()))
-                    return true
+
+                    return  true
                 }
             }
         }
@@ -99,5 +100,15 @@ object Main : ClientModInitializer {
         }
 
         return false
+    }
+}
+
+operator fun String.contains(proxy: Proxy): Boolean {
+    return if (ConfigHolder.config.caseSensitiveProxies) {
+        proxy.prefix?.let { this.startsWith(it) } ?: proxy.suffix?.let { this.endsWith(it) } ?: throw IllegalStateException("Illegal proxy.")
+    } else {
+        val message = this.lowercase()
+
+        proxy.prefix?.lowercase()?.let { message.startsWith(it) } ?: proxy.suffix?.lowercase()?.let { message.endsWith(it) } ?: throw IllegalStateException("Illegal proxy.")
     }
 }
