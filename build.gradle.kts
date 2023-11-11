@@ -6,7 +6,7 @@ plugins {
 	id("dev.architectury.loom") version "1.3-SNAPSHOT"
 }
 
-version = "0.1.1"
+version = "0.2.0-alpha.1"
 group = "compass_system.wiziplicity"
 base.archivesName = "wiziplicity"
 
