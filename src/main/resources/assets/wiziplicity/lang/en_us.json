@@ -25,11 +25,11 @@
   "command.wiziplicity.member.rename.failure": "cannot rename \"%s\" as a member named \"%s\" exists.",
 
   "command.wiziplicity.member.displayname.success": "%s's display name is \"%s\".",
-  "command.wiziplicity.member.displayname.failure": "%s's has no display name.",
+  "command.wiziplicity.member.displayname.failure": "%s has no display name.",
   "command.wiziplicity.member.displayname.set": "%s's display name is now \"%s\".",
 
   "command.wiziplicity.member.color.success": "%s's color is \"%s\".",
-  "command.wiziplicity.member.color.failure": "%s's has no color.",
+  "command.wiziplicity.member.color.failure": "%s has no color.",
   "command.wiziplicity.member.color.set": "%s's color is now \"%s\".",
 
   "command.wiziplicity.member.proxy.empty": "%s has no proxies.",
