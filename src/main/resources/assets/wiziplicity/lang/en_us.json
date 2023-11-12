@@ -25,14 +25,14 @@
   "command.wiziplicity.member.rename.failure": "cannot rename \"%s\" as a member named \"%s\" exists.",
 
   "command.wiziplicity.member.displayname.success": "%s's display name is \"%s\".",
-  "command.wiziplicity.member.displayname.failure": "%s has no display name.",
+  "command.wiziplicity.member.displayname.failure": "%s has no display name set.",
   "command.wiziplicity.member.displayname.set": "%s's display name is now \"%s\".",
 
   "command.wiziplicity.member.color.success": "%s's color is \"%s\".",
-  "command.wiziplicity.member.color.failure": "%s has no color.",
+  "command.wiziplicity.member.color.failure": "%s has no color set.",
   "command.wiziplicity.member.color.set": "%s's color is now \"%s\".",
 
-  "command.wiziplicity.member.proxy.empty": "%s has no proxies.",
+  "command.wiziplicity.member.proxy.empty": "%s has no proxies set.",
   "command.wiziplicity.member.proxy.header": "%s's proxies:",
   "command.wiziplicity.member.proxy.line": "  - %s",
 
@@ -52,11 +52,11 @@
   "command.wiziplicity.member.delete.success": "Member %s has been deleted.",
 
   "command.wiziplicity.member.pronouns.success": "%s's pronouns are \"%s\".",
-  "command.wiziplicity.member.pronouns.failure": "%s does not have pronouns set.",
+  "command.wiziplicity.member.pronouns.failure": "%s has no pronouns set.",
   "command.wiziplicity.member.pronouns.set": "%s's pronouns have been set to \"%s\".",
 
   "command.wiziplicity.member.skin.success": "%s's skin is %s, \"%s\".",
-  "command.wiziplicity.member.skin.failure": "%s does not have a skin set.",
+  "command.wiziplicity.member.skin.failure": "%s has no skin set.",
   "command.wiziplicity.member.skin.set": "%s's skin has been set to %s, \"%s\".",
 
   "commands.wiziplicity.switch.out.success": "Switch out registered.",
