@@ -580,9 +580,9 @@ object Commands {
                         runs {
                             val server = ServerArgumentType.getServer(this, "server")
 
-                            val ip = ConfigHolder.createAlias(to = server.first)
+                            val ip = ConfigHolder.createAlias(to = server.id)
 
-                            source.sendFeedback(Component.translatable("commands.wiziplicity.config.server.alias", ip, server.first).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("commands.wiziplicity.config.server.alias", ip, server.id).withWiziplicityPrefix())
 
                             Command.SINGLE_SUCCESS
                         }

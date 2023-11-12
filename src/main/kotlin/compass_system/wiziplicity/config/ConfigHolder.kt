@@ -146,7 +146,7 @@ object ConfigHolder {
 
                 config.serverSettings[alias]!!.copy()
             } else {
-                ServerSettings()
+                ServerSettings(id = address)
             }
 
             action.invoke(server)

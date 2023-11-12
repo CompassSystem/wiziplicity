@@ -94,7 +94,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
             }
         }
 
-        val serverSettings = combinedSettings.filterValues { it is JsonObject }.mapValues { prettyJson.decodeFromJsonElement(ServerSettings.serializer(), it.value as JsonObject) }
+        val serverSettings = combinedSettings.filterValues { it is JsonObject }.mapValues { prettyJson.decodeFromJsonElement(ProtoServerSettings.serializer(), it.value as JsonObject) }
         val aliasedServers = combinedSettings.filterValues { it is JsonPrimitive }.mapValues { (it.value as JsonPrimitive).content }
 
         ConfigV1(
@@ -104,7 +104,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
                 preserveLastFronter = preserveLastFronter,
                 caseSensitiveProxies = caseSensitiveProxies,
                 headmates = headmates.mapValues { it.value.construct(it.key) }.toMutableMap(),
-                serverSettings = serverSettings.toMutableMap(),
+                serverSettings = serverSettings.mapValues { it.value.construct(it.key) }.toMutableMap(),
                 aliasedServerSettings = aliasedServers.toMutableMap()
         )
     }
@@ -244,7 +244,14 @@ data class Headmate(
 }
 
 @Serializable
-data class ServerSettings(
+data class ProtoServerSettings(
         @SerialName("skin_change_delay")
+        var skinChangeDelay: Int = 60
+) {
+    fun construct(id: String) = ServerSettings(id, skinChangeDelay)
+}
+
+data class ServerSettings(
+        val id: String,
         var skinChangeDelay: Int = 60
 )
