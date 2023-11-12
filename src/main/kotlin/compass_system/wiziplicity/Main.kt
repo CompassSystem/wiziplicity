@@ -2,6 +2,7 @@ package compass_system.wiziplicity
 
 import compass_system.wiziplicity.command.Commands
 import compass_system.wiziplicity.config.ConfigHolder
+import compass_system.wiziplicity.config.FixPosition
 import compass_system.wiziplicity.config.Proxy
 import compass_system.wiziplicity.misc.FrontHolder
 import compass_system.wiziplicity.misc.CommandQueue
@@ -14,7 +15,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.minecraft.client.Minecraft
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.lang.IllegalStateException
 
 object Main : ClientModInitializer {
     internal const val MOD_ID = "wiziplicity"
@@ -74,22 +74,20 @@ object Main : ClientModInitializer {
                     }
                 }
             }
-        }.sortedByDescending { "${it.second.prefix ?: ""}${it.second.suffix ?: ""}".length }
+        }.sortedByDescending { it.second.fix.length }
 
         for (identifiedProxy in proxies) {
             val headmate = identifiedProxy.first
             val proxy = identifiedProxy.second
 
             if (proxy in message) {
-                if (proxy.prefix != null) {
-                    CommandQueue.add(SendMessage(headmate, message.takeLast(message.length - proxy.prefix.length).trimStart()))
-
-                    return  true
-                } else if (proxy.suffix != null) {
-                    CommandQueue.add(SendMessage(headmate, message.take(message.length - proxy.suffix.length).trimEnd()))
-
-                    return  true
+                if (proxy.fixPosition == FixPosition.START) {
+                    CommandQueue.add(SendMessage(headmate, message.takeLast(message.length - proxy.fix.length).trimStart()))
+                } else {
+                    CommandQueue.add(SendMessage(headmate, message.take(message.length - proxy.fix.length).trimEnd()))
                 }
+
+                return true
             }
         }
 
@@ -105,10 +103,18 @@ object Main : ClientModInitializer {
 
 operator fun String.contains(proxy: Proxy): Boolean {
     return if (ConfigHolder.config.caseSensitiveProxies) {
-        proxy.prefix?.let { this.startsWith(it) } ?: proxy.suffix?.let { this.endsWith(it) } ?: throw IllegalStateException("Illegal proxy.")
+        if (proxy.fixPosition == FixPosition.START) {
+            this.startsWith(proxy.fix)
+        } else {
+            this.endsWith(proxy.fix)
+        }
     } else {
         val message = this.lowercase()
 
-        proxy.prefix?.lowercase()?.let { message.startsWith(it) } ?: proxy.suffix?.lowercase()?.let { message.endsWith(it) } ?: throw IllegalStateException("Illegal proxy.")
+        if (proxy.fixPosition == FixPosition.START) {
+            message.startsWith(proxy.fix.lowercase())
+        } else {
+            message.endsWith(proxy.fix.lowercase())
+        }
     }
 }

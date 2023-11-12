@@ -95,6 +95,7 @@ object Commands {
 
                     systemData.members.forEach { headmate ->
                         ConfigHolder.config.headmates[headmate.name] = Headmate(
+                                id = headmate.name,
                                 pronouns = headmate.pronouns,
                                 color = headmate.color?.let { "#$it" },
                                 proxytags = headmate.proxyTags.map { it.toConfigProxy() }.toMutableList()
@@ -153,10 +154,10 @@ object Commands {
                             val headmate = HeadmateArgumentType.getHeadmate(this, "id")
                             val newId = StringArgumentType.getString(this, "newid")
 
-                            if (ConfigHolder.renameHeadmate(headmate.first, newId)) {
-                                source.sendFeedback(Component.translatable("command.wiziplicity.member.rename.success", headmate.first, newId).withWiziplicityPrefix())
+                            if (ConfigHolder.renameHeadmate(headmate.id, newId)) {
+                                source.sendFeedback(Component.translatable("command.wiziplicity.member.rename.success", headmate.id, newId).withWiziplicityPrefix())
                             } else {
-                                source.sendFeedback(Component.translatable("command.wiziplicity.member.rename.failure", headmate.first, newId).withWiziplicityPrefix())
+                                source.sendFeedback(Component.translatable("command.wiziplicity.member.rename.failure", headmate.id, newId).withWiziplicityPrefix())
                             }
 
                             Command.SINGLE_SUCCESS
@@ -167,12 +168,12 @@ object Commands {
                 val displayNameAction: LiteralArgumentBuilder<FabricClientCommandSource>.() -> Unit = {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
-                        val displayName = headmate.second.name
+                        val displayName = headmate.name
 
                         if (displayName != null) {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.displayname.success", headmate.first, displayName).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.displayname.success", headmate.id, displayName).withWiziplicityPrefix())
                         } else {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.displayname.failure", headmate.first).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.displayname.failure", headmate.id).withWiziplicityPrefix())
                         }
 
                         Command.SINGLE_SUCCESS
@@ -183,10 +184,10 @@ object Commands {
                             val headmate = HeadmateArgumentType.getHeadmate(this, "id")
                             val displayName = StringArgumentType.getString(this, "name")
 
-                            headmate.second.name = displayName
+                            headmate.name = displayName
                             ConfigHolder.changed = true
 
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.displayname.set", headmate.first, displayName).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.displayname.set", headmate.id, displayName).withWiziplicityPrefix())
 
                             Command.SINGLE_SUCCESS
                         }
@@ -196,12 +197,12 @@ object Commands {
                 val colorAction: LiteralArgumentBuilder<FabricClientCommandSource>.() -> Unit = {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
-                        val color = headmate.second.color
+                        val color = headmate.color
 
                         if (color != null) {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.color.success", headmate.first, color).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.color.success", headmate.id, color).withWiziplicityPrefix())
                         } else {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.color.failure", headmate.first).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.color.failure", headmate.id).withWiziplicityPrefix())
                         }
 
                         Command.SINGLE_SUCCESS
@@ -212,10 +213,10 @@ object Commands {
                             val headmate = HeadmateArgumentType.getHeadmate(this, "id")
                             val color = ColorArgumentType.getColor(this, "color")
 
-                            headmate.second.color = color
+                            headmate.color = color
                             ConfigHolder.changed = true
 
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.color.set", headmate.first, color).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.color.set", headmate.id, color).withWiziplicityPrefix())
 
                             Command.SINGLE_SUCCESS
                         }
@@ -226,12 +227,12 @@ object Commands {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
 
-                        val proxys = headmate.second.proxytags
+                        val proxys = headmate.proxytags
 
                         if (proxys.isEmpty()) {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.empty", headmate.first).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.empty", headmate.id).withWiziplicityPrefix())
                         } else {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.header", headmate.first).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.header", headmate.id).withWiziplicityPrefix())
                             proxys.forEach {
                                 source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.line", it.toString()))
                             }
@@ -251,20 +252,20 @@ object Commands {
 
                                     ConfigHolder.config.headmates.forEach { (id, iHeadmate) ->
                                         if (proxyObj in iHeadmate.proxytags) {
-                                            if (headmate.first != id) { // headmate.first == id is handled later
-                                                source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.exists_other", proxyObj.toString(), headmate.first, id).withWiziplicityPrefix())
+                                            if (headmate.id != id) { // headmate.first == id is handled later
+                                                source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.exists_other", proxyObj.toString(), headmate.id, id).withWiziplicityPrefix())
 
                                                 return@runs Command.SINGLE_SUCCESS
                                             }
                                         }
                                     }
 
-                                    if (headmate.second.addProxy(proxyObj)) {
-                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.success", proxyObj.toString(), headmate.first).withWiziplicityPrefix())
+                                    if (headmate.addProxy(proxyObj)) {
+                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.success", proxyObj.toString(), headmate.id).withWiziplicityPrefix())
 
                                         ConfigHolder.changed = true
                                     } else {
-                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.exists", headmate.first, proxyObj.toString()).withWiziplicityPrefix())
+                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.exists", headmate.id, proxyObj.toString()).withWiziplicityPrefix())
                                     }
                                 } catch (error: Exception) {
                                     source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.add.failure", proxy).withWiziplicityPrefix())
@@ -284,12 +285,12 @@ object Commands {
                                 try {
                                     val proxyObj = Proxy.of(proxy, ::RuntimeException)
 
-                                    if (headmate.second.removeProxy(proxyObj)) {
-                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.remove.success", headmate.first).withWiziplicityPrefix())
+                                    if (headmate.removeProxy(proxyObj)) {
+                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.remove.success", headmate.id).withWiziplicityPrefix())
 
                                         ConfigHolder.changed = true
                                     } else {
-                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.remove.missing", headmate.first).withWiziplicityPrefix())
+                                        source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.remove.missing", headmate.id).withWiziplicityPrefix())
                                     }
                                 } catch (error: Exception) {
                                     source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.remove.failure", proxy).withWiziplicityPrefix())
@@ -310,7 +311,7 @@ object Commands {
 
                                 ConfigHolder.config.headmates.forEach { (id, iHeadmate) ->
                                     if (proxyObj in iHeadmate.proxytags) {
-                                        if (headmate.first != id) {
+                                        if (headmate.id != id) {
                                             source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.exists_other", proxyObj.toString(), id).withWiziplicityPrefix())
 
                                             return@runs Command.SINGLE_SUCCESS
@@ -318,8 +319,8 @@ object Commands {
                                     }
                                 }
 
-                                headmate.second.setProxy(proxyObj)
-                                source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.success", headmate.first, proxyObj.toString()).withWiziplicityPrefix())
+                                headmate.setProxy(proxyObj)
+                                source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.success", headmate.id, proxyObj.toString()).withWiziplicityPrefix())
                                 ConfigHolder.changed = true
                             } catch (error: Exception) {
                                 source.sendFeedback(Component.translatable("command.wiziplicity.member.proxy.set.failure", proxy).withWiziplicityPrefix())
@@ -346,8 +347,8 @@ object Commands {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
 
-                        ConfigHolder.deleteHeadmate(headmate.first)
-                        source.sendFeedback(Component.translatable("command.wiziplicity.member.delete.success", headmate.first).withWiziplicityPrefix())
+                        ConfigHolder.deleteHeadmate(headmate.id)
+                        source.sendFeedback(Component.translatable("command.wiziplicity.member.delete.success", headmate.id).withWiziplicityPrefix())
 
                         Command.SINGLE_SUCCESS
                     }
@@ -356,12 +357,12 @@ object Commands {
                 literal("pronouns") {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
-                        val pronouns = headmate.second.pronouns
+                        val pronouns = headmate.pronouns
 
                         if (pronouns != null) {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.pronouns.success", headmate.first, pronouns).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.pronouns.success", headmate.id, pronouns).withWiziplicityPrefix())
                         } else {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.pronouns.failure", headmate.first).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.pronouns.failure", headmate.id).withWiziplicityPrefix())
                         }
 
                         Command.SINGLE_SUCCESS
@@ -372,10 +373,10 @@ object Commands {
                             val headmate = HeadmateArgumentType.getHeadmate(this, "id")
                             val pronouns = StringArgumentType.getString(this, "pronouns")
 
-                            headmate.second.pronouns = pronouns
+                            headmate.pronouns = pronouns
                             ConfigHolder.changed = true
 
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.pronouns.set", headmate.first, pronouns).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.pronouns.set", headmate.id, pronouns).withWiziplicityPrefix())
 
                             Command.SINGLE_SUCCESS
                         }
@@ -385,13 +386,13 @@ object Commands {
                 literal("skin") {
                     runs {
                         val headmate = HeadmateArgumentType.getHeadmate(this, "id")
-                        val skin = headmate.second.skin
-                        val skinType = headmate.second.skinType
+                        val skin = headmate.skin
+                        val skinType = headmate.skinType
 
                         if (skin != null && skinType != null) {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.success", headmate.first, skinType, skin).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.success", headmate.id, skinType, skin).withWiziplicityPrefix())
                         } else {
-                            source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.failure", headmate.first).withWiziplicityPrefix())
+                            source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.failure", headmate.id).withWiziplicityPrefix())
                         }
 
                         Command.SINGLE_SUCCESS
@@ -404,11 +405,11 @@ object Commands {
                                 val skinType = SkinTypeArgumentType.getSkinType(this, "skin_type")
                                 val url = StringArgumentType.getString(this, "url")
 
-                                headmate.second.skin = url
-                                headmate.second.skinType = skinType
+                                headmate.skin = url
+                                headmate.skinType = skinType
                                 ConfigHolder.changed = true
 
-                                source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.set", headmate.first, skinType, url).withWiziplicityPrefix())
+                                source.sendFeedback(Component.translatable("command.wiziplicity.member.skin.set", headmate.id, skinType, url).withWiziplicityPrefix())
 
                                 Command.SINGLE_SUCCESS
                             }
@@ -439,9 +440,9 @@ object Commands {
                 runs {
                     val headmate = HeadmateArgumentType.getHeadmate(this, "headmate")
 
-                    CommandQueue.add(Switch(headmate.first))
+                    CommandQueue.add(Switch(headmate.id))
 
-                    source.sendFeedback(Component.translatable("commands.wiziplicity.switch.headmate.success", headmate.first).withWiziplicityPrefix())
+                    source.sendFeedback(Component.translatable("commands.wiziplicity.switch.headmate.success", headmate.id).withWiziplicityPrefix())
 
                     Command.SINGLE_SUCCESS
                 }

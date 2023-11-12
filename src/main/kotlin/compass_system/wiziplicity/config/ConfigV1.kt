@@ -10,7 +10,6 @@ import kotlinx.serialization.encoding.encodeStructure
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import java.lang.IllegalStateException
 
 // todo replace with/no pronouns with a separate pronouns format which changes {pronouns}
 @Serializable(with = ConfigV1Serializer::class)
@@ -33,7 +32,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
         element<Int>("skin_change_delay")
         element<Boolean>("preserve_last_fronter")
         element<Boolean>("case_sensitive_proxies")
-        element("headmates", mapSerialDescriptor<String, Headmate>())
+        element("headmates", mapSerialDescriptor<String, ProtoHeadmate>())
         element("server_settings", mapSerialDescriptor<String, JsonElement>())
     }
 
@@ -59,17 +58,18 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
             encodeIntElement(descriptor, 2, value.skinChangeDelay)
             encodeBooleanElement(descriptor, 3, value.preserveLastFronter)
             encodeBooleanElement(descriptor, 4, value.caseSensitiveProxies)
-            encodeSerializableElement(descriptor, 5, serializer<Map<String, Headmate>>(), value.headmates)
+            encodeSerializableElement(descriptor, 5, serializer<Map<String, ProtoHeadmate>>(), value.headmates.mapValues { it.value.toSerializable() })
             encodeSerializableElement(descriptor, 6, serializer<Map<String, JsonElement>>(), combinedSettingsMap)
         }
     }
 
+    @Suppress("RedundantExplicitType")
     override fun deserialize(decoder: Decoder): ConfigV1 = decoder.decodeStructure(descriptor) {
         var nicknames: Map<String, String> = emptyMap()
         var skinChangeDelay: Int = 60
         var preserveLastFronter = true
         var caseSensitiveProxies = true
-        var headmates: Map<String, Headmate> = emptyMap()
+        var headmates: Map<String, ProtoHeadmate> = emptyMap()
         var combinedSettings: Map<String, JsonElement> = emptyMap()
 
         loop@ while (true) {
@@ -87,7 +87,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
                 2 -> skinChangeDelay = decodeIntElement(descriptor, 2)
                 3 -> preserveLastFronter = decodeBooleanElement(descriptor, 3)
                 4 -> caseSensitiveProxies = decodeBooleanElement(descriptor, 3)
-                5 -> headmates = decodeSerializableElement(descriptor, 4, serializer<Map<String, Headmate>>())
+                5 -> headmates = decodeSerializableElement(descriptor, 4, serializer<Map<String, ProtoHeadmate>>())
                 6 -> combinedSettings = decodeSerializableElement(descriptor, 5, serializer<Map<String, JsonElement>>())
 
                 else -> throw SerializationException("Unexpected index $index")
@@ -103,7 +103,7 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
                 skinChangeDelay = skinChangeDelay,
                 preserveLastFronter = preserveLastFronter,
                 caseSensitiveProxies = caseSensitiveProxies,
-                headmates = headmates.toMutableMap(),
+                headmates = headmates.mapValues { it.value.construct(it.key) }.toMutableMap(),
                 serverSettings = serverSettings.toMutableMap(),
                 aliasedServerSettings = aliasedServers.toMutableMap()
         )
@@ -111,43 +111,45 @@ class ConfigV1Serializer : KSerializer<ConfigV1> {
 
 }
 
+enum class FixPosition {
+    START,
+    END
+}
+
 @Serializable(with = ProxySerializer::class)
 data class Proxy(
-        val prefix: String? = null,
-        val suffix: String? = null
+        val fix: String,
+        val fixPosition: FixPosition
 ) {
     override fun toString(): String {
-        return if (prefix != null && suffix != null) {
-            throw IllegalStateException("Illegal proxy")
-        } else if (prefix != null) {
-            "${prefix}text"
+        return if (fixPosition == FixPosition.START) {
+            "${fix}text"
         } else {
-            "text${suffix}"
+            "text${fix}"
         }
     }
 
     companion object {
         fun of(value: String, errorCreator: (String) -> Exception): Proxy {
-            val left = value.substringBefore("text")
-
-            if (left == value) {
-                throw errorCreator("text not found in value")
+            if ("text" !in value) {
+                throw errorCreator("Cannot find \"text\" in value, proxy must take format \"<prefix>text\" or \"text<suffix>\".")
             }
 
-            if (left.isEmpty()) {
-                val right = value.substringAfter("text")
-                if (right.isEmpty()) {
-                    throw errorCreator("no prefix or suffix found")
-                } else {
-                    return Proxy(suffix = right)
-                }
+            val left = value.substringBefore("text")
+            val right = value.substringAfter("text")
+
+            if (left.isNotEmpty() && right.isNotEmpty()) {
+                throw errorCreator("Cannot create a proxy with both a prefix and a suffix.")
+            }
+
+            if (left.isEmpty() && right.isEmpty()) {
+                throw errorCreator("Cannot create a proxy without a prefix or a suffix.")
+            }
+
+            return if (right.isEmpty()) {
+                Proxy(left, FixPosition.START)
             } else {
-                val right = value.substringAfter("text")
-                if (right.isNotEmpty()) {
-                    throw errorCreator("both prefix and suffix found, cannot decode illegal proxy.")
-                } else {
-                    return Proxy(prefix = left)
-                }
+                Proxy(right, FixPosition.END)
             }
         }
     }
@@ -162,22 +164,12 @@ class ProxySerializer : KSerializer<Proxy> {
         return Proxy.of(value, errorCreator = ::SerializationException)
     }
 
-    override fun serialize(encoder: Encoder, value: Proxy) {
-        if (value.prefix != null && value.suffix != null) {
-            throw SerializationException("Both prefix and suffix found, cannot serialize illegal proxy.")
-        }else if (value.prefix != null) {
-            encoder.encodeString("${value.prefix}text")
-        } else if (value.suffix != null) {
-            encoder.encodeString("text${value.suffix}")
-        }
-    }
-
+    override fun serialize(encoder: Encoder, value: Proxy) = encoder.encodeString(value.toString())
 }
 
 @Serializable
-data class Headmate(
+data class ProtoHeadmate(
         var name: String? = null,
-        var nickname: String? = null,
         var pronouns: String? = null,
         val proxytags: MutableList<Proxy> = mutableListOf(),
         var skin: String? = null,
@@ -185,6 +177,21 @@ data class Headmate(
         var skinType: String? = null,
         var color: String? = null
 ) {
+    fun construct(id: String) = Headmate(id, name, pronouns, proxytags, skin, skinType, color)
+}
+
+data class Headmate(
+        val id: String,
+
+        var name: String? = null,
+        var pronouns: String? = null,
+        val proxytags: MutableList<Proxy> = mutableListOf(),
+        var skin: String? = null,
+        var skinType: String? = null,
+        var color: String? = null
+) {
+    fun toSerializable() = ProtoHeadmate(name, pronouns, proxytags,skin, skinType, color)
+
     fun addProxy(proxyObj: Proxy) = if (proxyObj in proxytags) {
         false
     } else {
@@ -218,7 +225,7 @@ data class Headmate(
             }
         }
 
-        val name = nickname ?: ConfigHolder.config.headmates.filter { it.value == this }.keys.first()
+        val name = name ?: id
         val pronouns = pronouns
 
         return if (pronouns == null) {

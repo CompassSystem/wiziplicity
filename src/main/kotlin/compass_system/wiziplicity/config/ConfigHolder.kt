@@ -223,7 +223,7 @@ object ConfigHolder {
         return if (config.headmates.containsKey(id)) {
             false
         } else {
-            config.headmates[id] = Headmate()
+            config.headmates[id] = Headmate(id = id)
             changed = true
 
             true
@@ -234,7 +234,7 @@ object ConfigHolder {
         return if (config.headmates.containsKey(newId)) {
             false
         } else {
-            config.headmates[newId] = config.headmates.remove(oldId)!!
+            config.headmates[newId] = config.headmates.remove(oldId)!!.copy(id = newId)
             changed = true
 
             true

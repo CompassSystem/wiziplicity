@@ -8,11 +8,13 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
 import com.mojang.brigadier.tree.LiteralCommandNode
+import compass_system.wiziplicity.config.FixPosition
 import compass_system.wiziplicity.config.Proxy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
+import java.lang.IllegalStateException
 
 private val PREFIX = Component.literal("")
         .append(Component.translatable("wiziplicity.mod_name").withStyle(ChatFormatting.DARK_AQUA))
@@ -78,5 +80,13 @@ data class PluralKitProxy(
         val prefix: String? = null,
         val suffix: String? = null
 ) {
-    fun toConfigProxy() = Proxy(prefix, suffix)
+    fun toConfigProxy(): Proxy {
+        return if (prefix != null && suffix == null) {
+            Proxy(prefix, FixPosition.START)
+        } else if (suffix != null && prefix == null) {
+            Proxy(suffix, FixPosition.END)
+        } else {
+            throw IllegalStateException("Illegal plural kit proxy.")
+        }
+    }
 }
